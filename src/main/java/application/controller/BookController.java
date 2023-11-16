@@ -1,6 +1,7 @@
 package application.controller;
 
 import application.dto.BookDto;
+import application.dto.BookSearchParametersDto;
 import application.dto.CreateBookRequestDto;
 import application.mapper.BookMapper;
 import application.service.BookService;
@@ -52,5 +53,13 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBookById(@PathVariable Long id) {
         bookService.deleteBookById(id);
+    }
+
+    @GetMapping("/search")
+    public List<BookDto> getAllByInputs(BookSearchParametersDto bookSearchParametersDto) {
+        return bookService.booksByParameters(bookSearchParametersDto)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 }
