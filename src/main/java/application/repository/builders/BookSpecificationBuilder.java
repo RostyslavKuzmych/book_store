@@ -17,19 +17,31 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
     @Override
     public Specification<Book> build(BookSearchParametersDto bookSearchParametersDto) {
         Specification<Book> specification = Specification.where(null);
-        if (bookSearchParametersDto.authors() != null
-                && bookSearchParametersDto.authors().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider("author")
-                    .getSpecification(bookSearchParametersDto.authors()));
+        if (authorsNotNull(bookSearchParametersDto)) {
+            specification = specification
+                    .and(getSpecificationByKey("title", bookSearchParametersDto.authors()));
         }
-        if (bookSearchParametersDto.titles() != null
-                && bookSearchParametersDto.titles().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider("title")
-                    .getSpecification(bookSearchParametersDto.titles()));
+        if (titlesNotNull(bookSearchParametersDto)) {
+            specification = specification
+                    .and(getSpecificationByKey("title", bookSearchParametersDto.titles()));
         }
         return specification;
+    }
+
+    private boolean authorsNotNull(BookSearchParametersDto bookSearchParametersDto) {
+        return bookSearchParametersDto.authors() != null
+                && bookSearchParametersDto.authors().length > 0;
+    }
+
+    private boolean titlesNotNull(BookSearchParametersDto bookSearchParametersDto) {
+        return bookSearchParametersDto.titles() != null
+                && bookSearchParametersDto.titles().length > 0;
+    }
+
+    private Specification<Book> getSpecificationByKey(String name, String [] params) {
+        return Specification.where(bookSpecificationProviderManager
+                .getSpecificationProvider(name)
+                .getSpecification(params));
     }
 }
 

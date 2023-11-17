@@ -8,6 +8,7 @@ import application.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,10 +57,14 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public List<BookDto> getAllByInputs(BookSearchParametersDto bookSearchParametersDto) {
-        return bookService.booksByParameters(bookSearchParametersDto)
+    public ResponseEntity<List<BookDto>> getAllByInputs(BookSearchParametersDto
+                                                                    bookSearchParametersDto) {
+        List<BookDto> bookDtoList = bookService.booksByParameters(bookSearchParametersDto)
                 .stream()
                 .map(bookMapper::toDto)
                 .toList();
+        return !bookDtoList.isEmpty()
+                ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
