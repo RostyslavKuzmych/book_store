@@ -1,7 +1,5 @@
 HELP.md
 target/
-application.properties
-liquebase.properties
 
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
