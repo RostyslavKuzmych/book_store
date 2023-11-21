@@ -1,12 +1,14 @@
 package application.controller;
 
 import application.dto.BookDto;
+import application.dto.BookSearchParametersDto;
 import application.dto.CreateBookRequestDto;
 import application.mapper.BookMapper;
 import application.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,5 +54,17 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBookById(@PathVariable Long id) {
         bookService.deleteBookById(id);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDto>> getAllByInputs(BookSearchParametersDto
+                                                                    bookSearchParametersDto) {
+        List<BookDto> bookDtoList = bookService.booksByParameters(bookSearchParametersDto)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
+        return !bookDtoList.isEmpty()
+                ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)
+                : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
