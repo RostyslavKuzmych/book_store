@@ -1,7 +1,7 @@
 package application.service;
 
-import application.dto.BookSearchParametersDto;
-import application.dto.CreateBookRequestDto;
+import application.dto.book.BookSearchParametersDto;
+import application.dto.book.CreateBookRequestDto;
 import application.model.Book;
 import java.util.List;
 import org.springframework.data.domain.Pageable;

@@ -1,8 +1,8 @@
 package application.mapper;
 
 import application.config.MapperConfig;
-import application.dto.BookDto;
-import application.dto.CreateBookRequestDto;
+import application.dto.book.BookDto;
+import application.dto.book.CreateBookRequestDto;
 import application.model.Book;
 import org.mapstruct.Mapper;
 
