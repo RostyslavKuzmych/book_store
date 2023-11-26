@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_roles
+      author: rostyslav_kuzmych
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: roleName
+                  value: USER
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: roleName
+                  value: ADMIN
