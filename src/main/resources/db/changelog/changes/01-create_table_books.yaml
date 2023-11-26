@@ -4,7 +4,7 @@ databaseChangeLog:
       author: rostyslav_kuzmych
       changes:
         - createTable:
-            tableName: "books"
+            tableName: books
             columns:
               - column:
                   name: id

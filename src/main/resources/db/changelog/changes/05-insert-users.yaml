@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_users
+      author: rostyslav_kuzmych
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: email
+                  value: bob@example.com
+              - column:
+                  name: password
+                  value: $2a$10$nA2TJNchONFwvYeKf7kALuwncLTIoFuywvK4YMa21IrRL.pcB/542
+              - column:
+                  name: first_name
+                  value: Bob
+              - column:
+                  name: last_name
+                  value: Smith
+              - column:
+                  name: shipping_address
+                  value: Shevchenko 122
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: email
+                  value: alice@example.com
+              - column:
+                  name: password
+                  value: $2a$10$CduBSqrkcg8RKSADri166O0E/SArKip98V19W840zl2VSqi9ZA0ym
+              - column:
+                  name: first_name
+                  value: Alice
+              - column:
+                  name: last_name
+                  value: Johnson
+              - column:
+                   name: shipping_address
+                   value: Shevchenko 123A
