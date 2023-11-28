@@ -20,4 +20,6 @@ public interface BookService {
     void deleteBookById(Long id);
 
     List<Book> booksByParameters(BookSearchParametersDto bookSearchParametersDto);
+
+    List<Book> getBooksByCategoryId(Long id);
 }

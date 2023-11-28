@@ -60,4 +60,9 @@ public class BookServiceImpl implements BookService {
         Specification<Book> specification = bookSpecificationBuilder.build(bookSearchParametersDto);
         return bookRepository.findAll(specification);
     }
+
+    @Override
+    public List<Book> getBooksByCategoryId(Long id) {
+        return bookRepository.findAllByCategoryId(id);
+    }
 }
