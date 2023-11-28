@@ -1,7 +1,7 @@
 package application.service;
 
-import application.dto.BookSearchParametersDto;
-import application.dto.CreateBookRequestDto;
+import application.dto.book.BookSearchParametersDto;
+import application.dto.book.CreateBookRequestDto;
 import application.exception.EntityNotFoundException;
 import application.mapper.BookMapper;
 import application.model.Book;
