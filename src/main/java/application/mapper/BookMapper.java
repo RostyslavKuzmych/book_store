@@ -4,6 +4,7 @@ import application.config.MapperConfig;
 import application.dto.book.BookDto;
 import application.dto.book.BookDtoWithoutCategoryIds;
 import application.dto.book.CreateBookRequestDto;
+import application.dto.cartItem.CartItemRequestDto;
 import application.model.Book;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,4 +26,5 @@ public interface BookMapper {
                 -> c.getId()).collect(Collectors.toSet());
         bookDto.setCategoryIds(longList);
     }
+
 }
