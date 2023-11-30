@@ -1,8 +1,10 @@
 package application.controller;
 
-import application.dto.book.BookDto;
+import application.dto.book.BookDtoWithoutCategoryIds;
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
+import application.mapper.BookMapper;
+import application.mapper.CategoryMapper;
 import application.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +30,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private final CategoryMapper categoryMapper;
+    private final BookMapper bookMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -35,7 +39,7 @@ public class CategoryController {
     @Operation(summary = "Create a category", description
             = "An endpoint for creating a category")
     public CategoryDto createCategory(@RequestBody @Valid CategoryRequestDto c) {
-        return categoryService.save(c);
+        return categoryMapper.toDto(categoryService.save(c));
     }
 
     @GetMapping
@@ -44,7 +48,7 @@ public class CategoryController {
             = "An endpoint for getting all categories")
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getAll(Pageable pageable) {
-        return categoryService.findAll(pageable);
+        return categoryService.findAll(pageable).stream().map(categoryMapper::toDto).toList();
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -53,7 +57,7 @@ public class CategoryController {
             = "An endpoint for getting a category by id")
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategoryById(@PathVariable Long id) {
-        return categoryService.getById(id);
+        return categoryMapper.toDto(categoryService.getById(id));
     }
 
     @PutMapping("/{id}")
@@ -63,7 +67,7 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.CONTINUE)
     public CategoryDto updateCategory(@PathVariable Long id,
                                       @RequestBody CategoryRequestDto categoryDto) {
-        return categoryService.update(id, categoryDto);
+        return categoryMapper.toDto(categoryService.update(id, categoryDto));
     }
 
     @DeleteMapping("/{id}")
@@ -79,7 +83,9 @@ public class CategoryController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books by category id",
             description = "An endpoint for getting all books by category id")
-    public List<BookDto> getBooksByCategoryId(@PathVariable Long id) {
-        return categoryService.getBookDtosByCategoryId(id);
+    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
+        return categoryService.getBookDtosByCategoryId(id)
+                .stream()
+                .map(bookMapper::toDtoWithoutCategories).toList();
     }
 }

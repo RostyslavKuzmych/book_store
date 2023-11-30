@@ -1,7 +1,6 @@
 package application.dto.book;
 
 import java.math.BigDecimal;
-import lombok.Data;
 
 public class BookDtoWithoutCategoryIds {
     private Long id;

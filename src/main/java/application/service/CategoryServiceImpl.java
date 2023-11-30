@@ -1,10 +1,7 @@
 package application.service;
 
-import application.dto.book.BookDto;
-import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
 import application.exception.EntityNotFoundException;
-import application.mapper.BookMapper;
 import application.mapper.CategoryMapper;
 import application.model.Book;
 import application.model.Category;
@@ -23,14 +20,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<Category> findAll(Pageable pageable) {
-        return categoryRepository.findAll();
+        return categoryRepository.findAll(pageable).stream().toList();
     }
 
     @Override
     public Category getById(Long id) {
         return categoryRepository.findById(id)
                         .orElseThrow(() ->
-                                new EntityNotFoundException("Can't find category by id " + id)));
+                                new EntityNotFoundException("Can't find category by id " + id));
     }
 
     @Override

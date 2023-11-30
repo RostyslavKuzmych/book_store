@@ -1,12 +1,11 @@
-package application.dto.cartItem;
+package application.dto.cart.item;
 
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class CartItemResponseDto {
     private Long id;
     private Long bookId;
-    private String bookName;
+    private String bookTitle;
     private Integer quantity;
 }
