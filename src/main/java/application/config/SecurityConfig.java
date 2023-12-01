@@ -1,6 +1,7 @@
 package application.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -17,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
+    @Value("${arrayOfEndpoints}")
+    private String[] publicEndpoints;
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -29,8 +32,7 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**", "/error",
-                                        "/swagger-ui/**", "/swagger-ui.html")
+                        auth.requestMatchers(publicEndpoints)
                         .permitAll()
                         .anyRequest()
                         .authenticated())
