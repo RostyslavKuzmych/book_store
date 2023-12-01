@@ -3,26 +3,16 @@ package application.controller;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.mapper.CartItemMapper;
-import application.mapper.ShoppingCartMapper;
-import application.model.Book;
 import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
-import application.repository.BookRepository;
 import application.repository.CartItemRepository;
-import application.service.BookService;
-import application.service.BookServiceImpl;
 import application.service.CartItemService;
 import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,24 +33,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/cart")
 public class ShoppingCartController {
     private final CartItemRepository cartItemRepository;
-    private final CartItemMapper cartItemMapper;
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;
-    private final ShoppingCartMapper shoppingCartMapper;
-    private final BookService bookService;
 
     @PostMapping
     @Operation(summary = "Add a book to the shopping cart",
             description = "An endpoint for adding a book to the shopping cart")
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingCartResponseDto addBookToSc(Authentication authentication,
+    public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
         ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        CartItem cartItem = getCartItem(shoppingCart, cartItemRequestDto);
-        addCartItemToShoppingCart(shoppingCart, cartItem);
-        return getShoppingCartDto(user);
+        CartItem cartItem = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
+        shoppingCartService.addCartItemToShoppingCart(shoppingCart, cartItem);
+        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
     }
 
     @GetMapping
@@ -70,27 +57,29 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return getShoppingCartDto(user);
+        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
+        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
     }
 
     @PutMapping("/cart-items/{id}")
-    @ResponseStatus(HttpStatus.CONTINUE)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update quantity of the book",
             description = "An endpoint for updating quantity of the book")
     @PreAuthorize("hasRole('USER')")
     public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
-                                                      @PathVariable Long id,
-                                                      @Valid @RequestBody
+                                                       @PathVariable Long id,
+                                                       @RequestBody @Valid
                                                           ShoppingCartRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         CartItem cartItem = cartItemService.findById(id);
         cartItem.setQuantity(requestDto.getQuantity());
         cartItemRepository.save(cartItem);
         ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        Set<CartItem> collect = getSetCartItem(id, shoppingCart, cartItem);
-        shoppingCart.setCartItemSet(collect);
+        Set<CartItem> setCartItem =
+                shoppingCartService.updateSetCartItem(id, shoppingCart, cartItem);
+        shoppingCart.setCartItemSet(setCartItem);
         shoppingCartService.save(shoppingCart);
-        return getShoppingCartDto(user);
+        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
     }
 
     @DeleteMapping("{id}")
@@ -100,47 +89,5 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         cartItemService.delete(id);
-    }
-
-    private ShoppingCartResponseDto getShoppingCartDto(User user) {
-        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        ShoppingCartResponseDto responseDto = shoppingCartMapper.toResponseDto(shoppingCart);
-        responseDto.setCartItems(shoppingCart.getCartItemSet()
-                .stream()
-                .map(cartItemMapper::toCartItemResponseDto)
-                .collect(Collectors.toSet()));
-        return responseDto;
-    }
-
-    private Set<CartItem> getSetCartItem(Long id, ShoppingCart s, CartItem c) {
-        Set<CartItem> cartItemSet = new HashSet<>();
-        for (CartItem cartItem : s.getCartItemSet()) {
-            if (cartItem.getId() == id) {
-                cartItemSet.add(c);
-            }
-            cartItemSet.add(cartItem);
-        }
-        return cartItemSet;
-    }
-
-    private CartItem getCartItem(ShoppingCart shoppingCart, CartItemRequestDto requestDto) {
-        CartItem cartItem = cartItemMapper.toCartItem(requestDto);
-        cartItem.setBook(bookService.getBookById(cartItem.getBook().getId()));
-        cartItem.setShoppingCart(shoppingCart);
-        CartItem save = cartItemRepository.save(cartItem);
-        System.out.println(save);
-        return save;
-    }
-
-    private void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
-        Set<CartItem> cartItemSet = shoppingCart.getCartItemSet();
-        if (cartItemSet == null) {
-            cartItemSet = new HashSet<>();
-            cartItemSet.add(cartItem);
-            shoppingCart.setCartItemSet(cartItemSet);
-            return;
-        }
-        shoppingCart.getCartItemSet().add(cartItem);
-        shoppingCartService.save(shoppingCart);
     }
 }

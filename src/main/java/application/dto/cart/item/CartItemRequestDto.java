@@ -8,7 +8,6 @@ import lombok.NonNull;
 public class CartItemRequestDto {
     @NonNull
     private Long bookId;
-    @NonNull
     @Min(1)
     private Integer quantity;
 }

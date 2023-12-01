@@ -5,7 +5,6 @@ import application.dto.cart.item.CartItemRequestDto;
 import application.dto.cart.item.CartItemResponseDto;
 import application.model.Book;
 import application.model.CartItem;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -34,7 +33,6 @@ public interface CartItemMapper {
 
     @Named(value = "getTitleByBook")
     default String getTitleByBook(Book book) {
-        System.out.println(book.getTitle());
         return book.getTitle();
     }
 }
