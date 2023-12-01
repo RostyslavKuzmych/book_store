@@ -12,7 +12,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     @Override
     public ShoppingCart save(ShoppingCart shoppingCart) {
-        return shoppingCartRepository.save(shoppingCart);
+        return shoppingCartRepository(shoppingCart);
     }
 
     @Override

@@ -5,10 +5,14 @@ import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
 import application.mapper.CartItemMapper;
 import application.mapper.ShoppingCartMapper;
+import application.model.Book;
 import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
+import application.repository.BookRepository;
 import application.repository.CartItemRepository;
+import application.service.BookService;
+import application.service.BookServiceImpl;
 import application.service.CartItemService;
 import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +47,7 @@ public class ShoppingCartController {
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;
     private final ShoppingCartMapper shoppingCartMapper;
+    private final BookService bookService;
 
     @PostMapping
     @Operation(summary = "Add a book to the shopping cart",
@@ -52,7 +58,8 @@ public class ShoppingCartController {
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
         ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        addCartItemToShoppingCart(shoppingCart, getCartItem(shoppingCart, cartItemRequestDto));
+        CartItem cartItem = getCartItem(shoppingCart, cartItemRequestDto);
+        addCartItemToShoppingCart(shoppingCart, cartItem);
         return getShoppingCartDto(user);
     }
 
@@ -118,18 +125,22 @@ public class ShoppingCartController {
 
     private CartItem getCartItem(ShoppingCart shoppingCart, CartItemRequestDto requestDto) {
         CartItem cartItem = cartItemMapper.toCartItem(requestDto);
+        cartItem.setBook(bookService.getBookById(cartItem.getBook().getId()));
         cartItem.setShoppingCart(shoppingCart);
-        return cartItemRepository.save(cartItem);
+        CartItem save = cartItemRepository.save(cartItem);
+        System.out.println(save);
+        return save;
     }
 
     private void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
         Set<CartItem> cartItemSet = shoppingCart.getCartItemSet();
         if (cartItemSet == null) {
-            shoppingCart.setCartItemSet(new HashSet<>((Collection) cartItem));
+            cartItemSet = new HashSet<>();
+            cartItemSet.add(cartItem);
+            shoppingCart.setCartItemSet(cartItemSet);
             return;
         }
-        cartItemSet.add(cartItem);
-        shoppingCart.setCartItemSet(cartItemSet);
+        shoppingCart.getCartItemSet().add(cartItem);
         shoppingCartService.save(shoppingCart);
     }
 }
