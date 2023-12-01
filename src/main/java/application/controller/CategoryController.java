@@ -85,7 +85,6 @@ public class CategoryController {
             description = "An endpoint for getting all books by category id")
     public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
         return categoryService.getBooksByCategoryId(id)
-                .stream()
-                .map(bookMapper::toDtoWithoutCategories).toList();
+                .stream().map(bookMapper::toDtoWithoutCategories).toList();
     }
 }
