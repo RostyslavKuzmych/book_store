@@ -1,4 +1,4 @@
-package application.service;
+package application.service.impl;
 
 import application.dto.shopping.cart.ShoppingCartResponseDto;
 import application.mapper.CartItemMapper;
@@ -10,6 +10,8 @@ import application.repository.ShoppingCartRepository;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import application.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -60,5 +62,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         }
         shoppingCart.getCartItemSet().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
+    }
+
+    @Override
+    public void clearShoppingCart(ShoppingCart shoppingCart) {
+        shoppingCart.setCartItemSet(new HashSet<>());
     }
 }

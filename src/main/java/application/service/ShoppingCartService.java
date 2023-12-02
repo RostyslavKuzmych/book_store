@@ -16,4 +16,6 @@ public interface ShoppingCartService {
     ShoppingCartResponseDto getShoppingCartDto(ShoppingCart shoppingCart, User user);
 
     void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem);
+
+    void clearShoppingCart(ShoppingCart shoppingCart);
 }

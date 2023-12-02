@@ -1,4 +1,4 @@
-package application.service;
+package application.service.impl;
 
 import application.dto.category.CategoryRequestDto;
 import application.exception.EntityNotFoundException;
@@ -7,6 +7,9 @@ import application.model.Book;
 import application.model.Category;
 import application.repository.CategoryRepository;
 import java.util.List;
+
+import application.service.BookService;
+import application.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

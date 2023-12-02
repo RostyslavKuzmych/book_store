@@ -1,4 +1,4 @@
-package application.service;
+package application.service.impl;
 
 import application.dto.book.BookSearchParametersDto;
 import application.dto.book.CreateBookRequestDto;
@@ -9,6 +9,8 @@ import application.repository.BookRepository;
 import application.repository.builders.BookSpecificationBuilder;
 import java.util.List;
 import java.util.Optional;
+
+import application.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

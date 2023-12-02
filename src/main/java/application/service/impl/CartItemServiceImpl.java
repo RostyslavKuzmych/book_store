@@ -1,4 +1,4 @@
-package application.service;
+package application.service.impl;
 
 import application.dto.cart.item.CartItemRequestDto;
 import application.exception.EntityNotFoundException;
@@ -6,6 +6,8 @@ import application.mapper.CartItemMapper;
 import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.repository.CartItemRepository;
+import application.service.BookService;
+import application.service.CartItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,11 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public void delete(Long id) {
         cartItemRepository.deleteById(id);
+    }
+
+    @Override
+    public void deleteCartItem(CartItem cartItem) {
+        cartItemRepository.delete(cartItem);
     }
 
     @Override
