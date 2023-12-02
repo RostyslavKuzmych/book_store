@@ -1,7 +1,7 @@
 package application.mapper;
 
 import application.config.MapperConfig;
-import application.dto.order_item.OrderItemResponseDto;
+import application.dto.item.OrderItemResponseDto;
 import application.model.Book;
 import application.model.CartItem;
 import application.model.OrderItem;

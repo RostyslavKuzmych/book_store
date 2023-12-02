@@ -1,31 +1,32 @@
 package application.service.impl;
 
 import application.dto.order.OrderRequestShippingAddressDto;
+import application.dto.order.OrderRequestStatusDto;
 import application.dto.order.OrderResponseDto;
+import application.exception.EntityNotFoundException;
 import application.mapper.OrderItemMapper;
 import application.mapper.OrderMapper;
 import application.model.CartItem;
 import application.model.Order;
 import application.model.OrderItem;
 import application.model.ShoppingCart;
-import application.repository.OrderItemRepository;
 import application.repository.OrderRepository;
 import application.service.CartItemService;
 import application.service.OrderItemService;
 import application.service.OrderService;
 import application.service.ShoppingCartService;
-import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Or;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+    private static final String FIND_ORDER_EXCEPTION = "Can't find order by id ";
     private final OrderItemMapper orderItemMapper;
     private final ShoppingCartService shoppingCartService;
     private final CartItemService cartItemService;
@@ -34,22 +35,56 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-    public OrderResponseDto createOrder(ShoppingCart shoppingCart, OrderRequestShippingAddressDto dto) {
-        Order order = Order.builder().shippingAddress(dto.getShippingAddress())
-                .localDateTime(LocalDateTime.now())
-                .user(shoppingCart.getUser())
-                .status(Order.Status.RECEIVED).build();
-        order.setItemSet(saveSetOrderItemsFromShoppingCart(order, shoppingCart));
-        System.out.println(order);
-        order.setTotal(getTotalPrice(order.getItemSet()));
-        System.out.println(order);
+    public OrderResponseDto createOrder(ShoppingCart shoppingCart,
+                                        OrderRequestShippingAddressDto dto) {
+        Order order = setAllFieldsOrder(shoppingCart, dto);
         orderRepository.save(order);
         Set<CartItem> cartItemSet = shoppingCart.getCartItemSet();
         shoppingCartService.clearShoppingCart(shoppingCart);
         deleteAllCartItems(cartItemSet);
         OrderResponseDto responseDto = orderMapper.toResponseDto(order);
-        setOrderItemsDtos(responseDto, order);
-        return responseDto;
+        return setOrderItemsDtos(responseDto, order);
+    }
+
+    @Override
+    public List<OrderResponseDto> getListOrderResponseDtos(Long id) {
+        return findAllByUserId(id)
+                .stream()
+                .map(orderMapper::toResponseDto)
+                .map(c -> setOrderItemsDtos(c, findByOrderId(c.getId())
+                )).toList();
+
+    }
+
+    @Override
+    public void updateStatusOrder(Long id, OrderRequestStatusDto dto) {
+        Order order = findByOrderId(id);
+        order.setStatus(dto.getStatus());
+        orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> findAllByUserId(Long id) {
+        return orderRepository.findAllByUserId(id);
+    }
+
+    @Override
+    public Order findByOrderId(Long id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException(FIND_ORDER_EXCEPTION + id));
+    }
+
+    private Order setAllFieldsOrder(ShoppingCart sc, OrderRequestShippingAddressDto dto) {
+        Order order = new Order();
+        order.setShippingAddress(dto.getShippingAddress());
+        order.setLocalDateTime(LocalDateTime.now());
+        order.setUser(sc.getUser());
+        order.setStatus(Order.Status.RECEIVED);
+        Order savedOrder = orderRepository.save(order);
+        order.setItemSet(saveSetOrderItemsFromShoppingCart(savedOrder, sc));
+        order.setTotal(getTotalPrice(order.getItemSet()));
+        return order;
     }
 
     private OrderItem addPriceToOrderItem(OrderItem orderItem, Order order) {
@@ -71,7 +106,6 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal bigDecimal = orderItems.stream()
                 .map(OrderItem::getPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        System.out.println(bigDecimal);
         return bigDecimal;
     }
 
@@ -86,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         return items;
     }
 
-    private void deleteAllCartItems(Set<CartItem> cartItemSet) {
+    public void deleteAllCartItems(Set<CartItem> cartItemSet) {
         cartItemSet.stream().forEach(cartItemService::deleteCartItem);
     }
 }

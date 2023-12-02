@@ -7,11 +7,10 @@ import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
 import application.repository.ShoppingCartRepository;
+import application.service.ShoppingCartService;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import application.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package application.dto.order_item;
+package application.dto.item;
 
 import lombok.Data;
 

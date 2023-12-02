@@ -1,11 +1,10 @@
 package application.dto.order;
 
-import application.dto.order_item.OrderItemResponseDto;
-import ch.qos.logback.core.status.Status;
-import lombok.Data;
+import application.dto.item.OrderItemResponseDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+import lombok.Data;
 
 @Data
 public class OrderResponseDto {
