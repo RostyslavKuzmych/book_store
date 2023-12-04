@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
         if (!userRepository.findUserByEmail(inputUser.getEmail()).isEmpty()) {
             throw new RegistrationException("You are already registered");
         }
-      User user = User.builder()
+        User user = User.builder()
                 .email(inputUser.getEmail())
                 .password(passwordEncoder.encode(inputUser.getPassword()))
                 .firstName(inputUser.getFirstName())
