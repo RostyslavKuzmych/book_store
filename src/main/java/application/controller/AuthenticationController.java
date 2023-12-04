@@ -1,8 +1,11 @@
 package application.controller;
 
+import application.dto.user.UserLoginRequestDto;
+import application.dto.user.UserLoginResponseDto;
 import application.dto.user.UserRegistrationRequestDto;
 import application.dto.user.UserResponseDto;
 import application.exception.RegistrationException;
+import application.security.AuthenticationService;
 import application.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authenticate user", description = "Endpoint for maganagement users")
 public class AuthenticationController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
     @Operation(summary = "Authenticate user", description = "Endpoint for authentication")
@@ -26,5 +30,11 @@ public class AuthenticationController {
                                         UserRegistrationRequestDto
                                                 requestDto) throws RegistrationException {
         return userService.register(requestDto);
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Login user", description = "Endpoint to login user")
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
+        return authenticationService.authenticate(requestDto);
     }
 }
