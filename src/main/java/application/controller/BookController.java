@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +36,7 @@ public class BookController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books from db",
             description = "Get a list of all available books")
-    public List<BookDto> getAll(Authentication authentication, Pageable pageable) {
+    public List<BookDto> getAll(Pageable pageable) {
         return bookService.findAll(pageable)
                 .stream()
                 .map(b -> bookMapper.toDto(b))
