@@ -15,3 +15,12 @@ databaseChangeLog:
       file: db/changelog/changes/07-insert-references.yaml
   - include:
       file: db/changelog/changes/08-insert-books.yaml
+  - include:
+      file: db/changelog/changes/09-create_table_categories.yaml
+  - include:
+      file: db/changelog/changes/10-insert-categories.yaml
+  - include:
+      file: db/changelog/changes/11-create-books_categories-table.yaml
+  - include:
+      file: db/changelog/changes/12-insert-references-books_categories.yaml
+

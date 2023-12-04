@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_categories
+      author: rostyslav_kuzmych
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: name
+                  value: Fiction
+              - column:
+                  name: description
+                  value: Genre encompassing all types of works created based on imagination or invention
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: name
+                  value: novel
+              - column:
+                  name: description
+                  value: Genre represented or exemplified by novels
+        - insert:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: name
+                  value: classics
+              - column:
+                  name: description
+                  value: Category of literature that encompasses classic works
