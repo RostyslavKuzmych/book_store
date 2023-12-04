@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-books
+      author: rostyslav_kuzmych
+      changes:
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: The Great Gatsby
+              - column:
+                  name: author
+                  value: F. Scott Fitzgerald
+              - column:
+                  name: isbn
+                  value: "9780743273565"
+              - column:
+                  name: price
+                  value: 10.99
+              - column:
+                  name: description
+                  value: The story of the fabulously wealthy Jay Gatsby
+              - column:
+                  name: cover_image
+                  value: "https://example.com/book1-cover-image.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: Pride and Prejudice
+              - column:
+                  name: author
+                  value: Jane Austen
+              - column:
+                  name: isbn
+                  value: "9780141439518"
+              - column:
+                  name: price
+                  value: 13.45
+              - column:
+                  name: description
+                  value: A romantic novel
+              - column:
+                  name: cover_image
+                  value: "https://example.com/book1-cover-image.jpg"
+        - insert:
+            tableName: books
+            columns:
+              - column:
+                  name: title
+                  value: 1984
+              - column:
+                  name: author
+                  value: George Orwell
+              - column:
+                  name: isbn
+                  value: "9780451524935"
+              - column:
+                  name: price
+                  value: 9.25
+              - column:
+                  name: description
+                  value: A dystopian social science fiction novel
+              - column:
+                  name: cover_image
+                  value: "https://example.com/book3-cover-image.jpg"
+
