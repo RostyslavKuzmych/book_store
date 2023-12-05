@@ -9,11 +9,10 @@ import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
 import application.repository.ShoppingCartRepository;
+import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
