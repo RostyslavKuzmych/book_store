@@ -4,7 +4,6 @@ import application.dto.user.UserRegistrationRequestDto;
 import application.dto.user.UserResponseDto;
 import application.exception.RegistrationException;
 import application.mapper.UserMapper;
-import application.model.ShoppingCart;
 import application.model.User;
 import application.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +31,7 @@ public class UserServiceImpl implements UserService {
                 .shippingAddress(inputUser.getShippingAddress())
                 .build();
         User savedUser = userRepository.save(user);
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setUser(savedUser);
-        shoppingCartService.save(shoppingCart);
+        shoppingCartService.createShoppingCart(savedUser);
         return userMapper.toDto(savedUser);
     }
 }

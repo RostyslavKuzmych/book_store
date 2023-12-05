@@ -12,7 +12,6 @@ import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,7 +46,7 @@ public class ShoppingCartController {
         ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
         CartItem cartItem = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
         shoppingCartService.addCartItemToShoppingCart(shoppingCart, cartItem);
-        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
+        return shoppingCartService.addBookToShoppingCart(authentication, cartItemRequestDto);
     }
 
     @GetMapping
@@ -58,7 +57,7 @@ public class ShoppingCartController {
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
+        return shoppingCartService.getShoppingCartDto(shoppingCart);
     }
 
     @PutMapping("/cart-items/{id}")
@@ -70,16 +69,7 @@ public class ShoppingCartController {
                                                        @PathVariable Long id,
                                                        @RequestBody @Valid
                                                           ShoppingCartRequestDto requestDto) {
-        User user = (User) authentication.getPrincipal();
-        CartItem cartItem = cartItemService.findById(id);
-        cartItem.setQuantity(requestDto.getQuantity());
-        cartItemRepository.save(cartItem);
-        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        Set<CartItem> setCartItem =
-                shoppingCartService.updateSetCartItem(id, shoppingCart, cartItem);
-        shoppingCart.setCartItemSet(setCartItem);
-        shoppingCartService.save(shoppingCart);
-        return shoppingCartService.getShoppingCartDto(shoppingCart, user);
+        return shoppingCartService.updateQuantityById(authentication, id, requestDto);
     }
 
     @DeleteMapping("{id}")

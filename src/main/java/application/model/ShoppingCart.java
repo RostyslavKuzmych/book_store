@@ -1,12 +1,18 @@
 package application.model;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -27,12 +33,8 @@ public class ShoppingCart {
     private Set<CartItem> cartItemSet = new HashSet<>();
 
     @OneToOne
-    @Column(nullable = false)
     private User user;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
-
-    public ShoppingCart() {
-    }
 }
