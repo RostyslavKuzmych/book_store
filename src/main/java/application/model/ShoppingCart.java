@@ -1,13 +1,7 @@
 package application.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
@@ -28,16 +22,15 @@ public class ShoppingCart {
     private Long id;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "shoppingCart")
-    @NonNull
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<CartItem> cartItemSet = new HashSet<>();
 
     @OneToOne
-    @NonNull
+    @Column(nullable = false)
     private User user;
 
-    @NonNull
+    @Column(nullable = false)
     private boolean isDeleted = false;
 
     public ShoppingCart() {
