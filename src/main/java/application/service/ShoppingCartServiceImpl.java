@@ -12,6 +12,8 @@ import application.repository.ShoppingCartRepository;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                                          CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
@@ -85,6 +88,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
                                                       Long id,
                                                       ShoppingCartRequestDto requestDto) {
