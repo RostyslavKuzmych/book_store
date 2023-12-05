@@ -12,4 +12,6 @@ public interface CartItemService {
     void deleteCartItem(CartItem cartItem);
 
     CartItem createCartItem(ShoppingCart shoppingCart, CartItemRequestDto requestDto);
+
+    CartItem save(CartItem cartItem);
 }

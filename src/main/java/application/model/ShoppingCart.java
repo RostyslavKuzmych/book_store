@@ -1,5 +1,6 @@
 package application.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -28,18 +28,13 @@ public class ShoppingCart {
     private Long id;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "shoppingCart")
-    @NonNull
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<CartItem> cartItemSet = new HashSet<>();
 
     @OneToOne
-    @NonNull
     private User user;
 
-    @NonNull
+    @Column(nullable = false)
     private boolean isDeleted = false;
-
-    public ShoppingCart() {
-    }
 }

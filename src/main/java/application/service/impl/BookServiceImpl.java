@@ -9,7 +9,6 @@ import application.repository.BookRepository;
 import application.repository.builders.BookSpecificationBuilder;
 import application.service.BookService;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -45,10 +44,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book updateBook(Long id, Book inputBook) {
-        bookRepository.updateBook(id, inputBook.getAuthor(), inputBook.getTitle(),
-                inputBook.getCoverImage(), inputBook.getDescription(), inputBook.getPrice());
-        return Optional.of(getBookById(id))
-                .orElseThrow(() -> new EntityNotFoundException("Can't find book"));
+        inputBook.setId(id);
+        return bookRepository.save(inputBook);
     }
 
     @Override

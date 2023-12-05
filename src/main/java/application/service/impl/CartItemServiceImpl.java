@@ -8,6 +8,7 @@ import application.model.ShoppingCart;
 import application.repository.CartItemRepository;
 import application.service.BookService;
 import application.service.CartItemService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +36,16 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    @Transactional
     public CartItem createCartItem(ShoppingCart shoppingCart, CartItemRequestDto requestDto) {
         CartItem cartItem = cartItemMapper.toCartItem(requestDto);
         cartItem.setBook(bookService.getBookById(cartItem.getBook().getId()));
         cartItem.setShoppingCart(shoppingCart);
+        return cartItemRepository.save(cartItem);
+    }
+
+    @Override
+    public CartItem save(CartItem cartItem) {
         return cartItemRepository.save(cartItem);
     }
 }
