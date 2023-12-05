@@ -32,7 +32,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: local_date_time
+                  name: orderDate
                   type: timestamp
                   constraints:
                     nullable: false

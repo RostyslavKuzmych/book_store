@@ -1,5 +1,6 @@
 package application.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,7 +11,6 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -26,20 +26,19 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    @NonNull
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     @ManyToOne
-    @NonNull
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
-    @NonNull
+    @Column(nullable = false)
     private Integer quantity;
 
-    @NonNull
+    @Column(nullable = false)
     private BigDecimal price;
 
-    @NonNull
+    @Column(nullable = false)
     private boolean isDeleted = false;
 }

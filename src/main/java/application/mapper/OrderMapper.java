@@ -11,7 +11,6 @@ import org.mapstruct.Named;
 @Mapper(config = MapperConfig.class)
 public interface OrderMapper {
     @Mapping(target = "userId", source = "user", qualifiedByName = "getUserIdByUser")
-    @Mapping(target = "orderDate", source = "localDateTime")
     @Mapping(target = "status", source = "status", qualifiedByName = "toString")
     OrderResponseDto toResponseDto(Order order);
 

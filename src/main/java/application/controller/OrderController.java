@@ -59,9 +59,9 @@ public class OrderController {
     @Operation(summary = "Update order status",
             description = "An endpoint for updating an order status")
     @PreAuthorize("hasRole('ADMIN')")
-    public void updateStatusOrder(@PathVariable Long id,
+    public void updateOrderStatus(@PathVariable Long id,
                                   @RequestBody OrderRequestStatusDto dto) {
-        orderService.updateStatusOrder(id, dto);
+        orderService.updateOrderStatus(id, dto);
     }
 
     @GetMapping("/{orderId}/items")

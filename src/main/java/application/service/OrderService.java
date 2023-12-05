@@ -13,7 +13,7 @@ public interface OrderService {
 
     List<OrderResponseDto> getListOrderResponseDtos(Long id);
 
-    void updateStatusOrder(Long id, OrderRequestStatusDto dto);
+    void updateOrderStatus(Long id, OrderRequestStatusDto dto);
 
     List<Order> findAllByUserId(Long id);
 

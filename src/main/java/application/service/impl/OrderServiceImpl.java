@@ -15,6 +15,7 @@ import application.service.CartItemService;
 import application.service.OrderItemService;
 import application.service.OrderService;
 import application.service.ShoppingCartService;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,9 +36,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
+    @Transactional
     public OrderResponseDto createOrder(ShoppingCart shoppingCart,
                                         OrderRequestShippingAddressDto dto) {
-        Order order = setAllFieldsOrder(shoppingCart, dto);
+        Order order = prepareOrder(shoppingCart, dto);
         orderRepository.save(order);
         Set<CartItem> cartItemSet = shoppingCart.getCartItemSet();
         shoppingCartService.clearShoppingCart(shoppingCart);
@@ -57,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateStatusOrder(Long id, OrderRequestStatusDto dto) {
+    public void updateOrderStatus(Long id, OrderRequestStatusDto dto) {
         Order order = findByOrderId(id);
         order.setStatus(dto.getStatus());
         orderRepository.save(order);
@@ -75,14 +77,14 @@ public class OrderServiceImpl implements OrderService {
                         new EntityNotFoundException(FIND_ORDER_EXCEPTION + id));
     }
 
-    private Order setAllFieldsOrder(ShoppingCart sc, OrderRequestShippingAddressDto dto) {
+    private Order prepareOrder(ShoppingCart sc, OrderRequestShippingAddressDto dto) {
         Order order = new Order();
         order.setShippingAddress(dto.getShippingAddress());
-        order.setLocalDateTime(LocalDateTime.now());
+        order.setOrderDate(LocalDateTime.now());
         order.setUser(sc.getUser());
         order.setStatus(Order.Status.RECEIVED);
         Order savedOrder = orderRepository.save(order);
-        order.setItemSet(saveSetOrderItemsFromShoppingCart(savedOrder, sc));
+        order.setItemSet(setOrderItemsToOrderFromShoppingCart(savedOrder, sc));
         order.setTotal(getTotalPrice(order.getItemSet()));
         return order;
     }
@@ -109,7 +111,7 @@ public class OrderServiceImpl implements OrderService {
         return bigDecimal;
     }
 
-    private Set<OrderItem> saveSetOrderItemsFromShoppingCart(Order order,
+    private Set<OrderItem> setOrderItemsToOrderFromShoppingCart(Order order,
                                                              ShoppingCart shoppingCart) {
         Set<OrderItem> items = shoppingCart.getCartItemSet()
                 .stream()
