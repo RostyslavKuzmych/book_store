@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,17 +34,16 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
-    @NonNull
+    @Column(nullable = false)
     private String password;
-    @NonNull
+    @Column(nullable = false)
     private String firstName;
-    @NonNull
+    @Column(nullable = false)
     private String lastName;
     private String shippingAddress;
-    @NonNull
+    @Column(nullable = false)
     private boolean isDeleted = false;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",

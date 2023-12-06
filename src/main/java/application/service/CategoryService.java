@@ -13,7 +13,7 @@ public interface CategoryService {
 
     Category save(CategoryRequestDto categoryDto);
 
-    List<Book> getBookDtosByCategoryId(Long id);
+    List<Book> getBooksByCategoryId(Long id);
 
     Category update(Long id, CategoryRequestDto categoryDto);
 

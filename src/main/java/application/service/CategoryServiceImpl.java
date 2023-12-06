@@ -36,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Book> getBookDtosByCategoryId(Long id) {
+    public List<Book> getBooksByCategoryId(Long id) {
         return bookService.getBooksByCategoryId(id);
     }
 

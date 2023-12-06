@@ -16,6 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto inputUser) {
@@ -29,6 +30,8 @@ public class UserServiceImpl implements UserService {
                 .lastName(inputUser.getLastName())
                 .shippingAddress(inputUser.getShippingAddress())
                 .build();
-        return userMapper.toDto(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+        shoppingCartService.createShoppingCart(savedUser);
+        return userMapper.toDto(savedUser);
     }
 }

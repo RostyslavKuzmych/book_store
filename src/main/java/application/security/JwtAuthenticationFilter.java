@@ -31,7 +31,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String token = getToken(request);
-        if (token != null && jwtUtil.isValidToken(token)) {
+        boolean isValid = false;
+        try {
+            isValid = jwtUtil.isValidToken(token);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token is invalid");
+            return;
+        }
+        if (token != null && isValid) {
             String userName = jwtUtil.extractUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
             final Authentication authentication

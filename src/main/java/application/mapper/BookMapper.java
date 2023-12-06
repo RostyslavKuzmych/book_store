@@ -25,4 +25,5 @@ public interface BookMapper {
                 -> c.getId()).collect(Collectors.toSet());
         bookDto.setCategoryIds(longList);
     }
+
 }

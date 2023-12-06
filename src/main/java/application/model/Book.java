@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
-import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -27,25 +26,21 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
+    @Column(nullable = false)
     private String title;
-    @NonNull
+    @Column(nullable = false)
     private String author;
-    @NonNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String isbn;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "books_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories = new HashSet<>();
-    @NonNull
+    @Column(nullable = false)
     private BigDecimal price;
     private String description;
     private String coverImage;
     @Column(nullable = false)
     private boolean isDeleted = false;
-
-    public Book() {
-    }
 }

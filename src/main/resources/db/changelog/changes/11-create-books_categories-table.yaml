@@ -20,4 +20,3 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_books_categories_category_id
                     references: categories(id)
-

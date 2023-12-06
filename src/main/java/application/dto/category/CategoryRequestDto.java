@@ -8,7 +8,6 @@ import lombok.Data;
 public class CategoryRequestDto {
     @NotNull
     private String name;
-    @NotNull
     @Size(min = 5, message = "should have at least 5 characters")
     private String description;
 }
