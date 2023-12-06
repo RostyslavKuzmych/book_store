@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    @Value("${arrayOfEndpoints}")
+    @Value("${publicEndpoints}")
     private String[] publicEndpoints;
 
     @Bean
