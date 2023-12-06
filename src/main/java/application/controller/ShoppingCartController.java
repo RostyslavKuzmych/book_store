@@ -4,7 +4,6 @@ import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
 import application.model.User;
-import application.repository.ShoppingCartRepository;
 import application.service.CartItemService;
 import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,15 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "Management shopping carts", description = "Endpoints for managing shopping carts")
 @RequestMapping("/api/cart")
+@PreAuthorize("hasRole('USER')")
 public class ShoppingCartController {
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;
-    private final ShoppingCartRepository shoppingCartRepository;
 
     @PostMapping
     @Operation(summary = "Add a book to the shopping cart",
             description = "An endpoint for adding a book to the shopping cart")
-    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
@@ -47,7 +45,6 @@ public class ShoppingCartController {
     @GetMapping
     @Operation(summary = "Get the shoppingCart",
             description = "An endpoint for getting user's shoppingCart")
-    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -56,9 +53,8 @@ public class ShoppingCartController {
 
     @PutMapping("/cart-items/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update quantity of the book",
-            description = "An endpoint for updating quantity of the book")
-    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Update quantity of the books",
+            description = "An endpoint for updating quantity of the books")
     public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
                                                        @PathVariable Long id,
                                                        @RequestBody @Valid
@@ -70,7 +66,6 @@ public class ShoppingCartController {
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a cartItem",
             description = "An endpoint for deleting a cartItem")
-    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         cartItemService.deleteById(id);

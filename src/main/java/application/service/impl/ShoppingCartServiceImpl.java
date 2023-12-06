@@ -31,6 +31,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartResponseDto addBookToShoppingCart(User user,
                                                          CartItemRequestDto cartItemRequestDto) {
         ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
@@ -43,15 +44,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartResponseDto getShoppingCartDto(Long userId) {
         ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(userId);
         return shoppingCartMapper.toResponseDto(shoppingCart);
-    }
-
-    @Override
-    public void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
-        if (shoppingCart.getCartItemSet() == null) {
-            shoppingCart.setCartItemSet(new HashSet<>());
-        }
-        shoppingCart.getCartItemSet().add(cartItem);
-        shoppingCartRepository.save(shoppingCart);
     }
 
     @Override
@@ -85,5 +77,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
         }
         return cartItemSet;
+    }
+
+    private void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
+        if (shoppingCart.getCartItemSet() == null) {
+            shoppingCart.setCartItemSet(new HashSet<>());
+        }
+        shoppingCart.getCartItemSet().add(cartItem);
+        shoppingCartRepository.save(shoppingCart);
     }
 }

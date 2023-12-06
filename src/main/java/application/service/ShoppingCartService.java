@@ -3,14 +3,13 @@ package application.service;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
 
 public interface ShoppingCartService {
     void createShoppingCart(User user);
 
-    void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem);
+    ShoppingCartResponseDto getShoppingCartDto(Long userId);
 
     void clearShoppingCart(ShoppingCart shoppingCart);
 
@@ -20,6 +19,4 @@ public interface ShoppingCartService {
 
     ShoppingCartResponseDto addBookToShoppingCart(User user,
                                                   CartItemRequestDto cartItemRequestDto);
-
-    ShoppingCartResponseDto getShoppingCartDto(Long userId);
 }

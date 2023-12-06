@@ -10,7 +10,6 @@ import application.repository.ShoppingCartRepository;
 import application.security.BelongingOrderToUserCheck;
 import application.service.OrderItemService;
 import application.service.OrderService;
-import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    private final ShoppingCartService shoppingCartService;
     private final ShoppingCartRepository shoppingCartRepository;
     private final OrderItemService orderItemService;
     private final BelongingOrderToUserCheck belongingOrderToUserCheck;
