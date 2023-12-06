@@ -3,7 +3,6 @@ package application.service.impl;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.mapper.CartItemMapper;
 import application.mapper.ShoppingCartMapper;
 import application.model.CartItem;
 import application.model.ShoppingCart;
@@ -14,9 +13,7 @@ import application.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -27,44 +24,25 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemService cartItemService;
 
     @Override
-    public ShoppingCart save(ShoppingCart shoppingCart) {
-        return shoppingCartRepository.save(shoppingCart);
-    }
-
-    @Override
-    public ShoppingCart findByUserId(Long id) {
-        return shoppingCartRepository.findShoppingCartByUserId(id);
-    }
-
-    @Override
-    public ShoppingCart createShoppingCart(User user) {
+    public void createShoppingCart(User user) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(user);
-        return save(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     @Override
-    public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
+    public ShoppingCartResponseDto addBookToShoppingCart(User user,
                                                          CartItemRequestDto cartItemRequestDto) {
-        User user = (User) authentication.getPrincipal();
-        ShoppingCart shoppingCart = findByUserId(user.getId());
+        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
         CartItem cartItem = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
         addCartItemToShoppingCart(shoppingCart, cartItem);
         return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
     @Override
-    public Set<CartItem> updateSetOfCartItem(Long id, ShoppingCart shoppingCart,
-                                             CartItem cartItem) {
-        Set<CartItem> cartItemSet = new HashSet<>();
-        for (CartItem c : shoppingCart.getCartItemSet()) {
-            if (c.getId() == id) {
-                cartItemSet.add(cartItem);
-            } else {
-                cartItemSet.add(c);
-            }
-        }
-        return cartItemSet;
+    public ShoppingCartResponseDto getShoppingCartDto(Long userId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(userId);
+        return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
     @Override
@@ -79,21 +57,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void clearShoppingCart(ShoppingCart shoppingCart) {
         shoppingCart.setCartItemSet(new HashSet<>());
-        save(shoppingCart);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     @Override
     @Transactional
-    public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
+    public ShoppingCartResponseDto updateQuantityById(User user,
                                                       Long id,
                                                       ShoppingCartRequestDto requestDto) {
-        User user = (User) authentication.getPrincipal();
         CartItem cartItem = cartItemService.findById(id);
         cartItem.setQuantity(requestDto.getQuantity());
         cartItemService.save(cartItem);
-        ShoppingCart shoppingCart = findByUserId(user.getId());
-        shoppingCart.setCartItemSet(updateSetOfCartItem(id, shoppingCart, cartItem));
-        save(shoppingCart);
+        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
+        shoppingCart.setCartItemSet(updateCartItems(id, shoppingCart, cartItem));
+        shoppingCartRepository.save(shoppingCart);
         return shoppingCartMapper.toResponseDto(shoppingCart);
+    }
+
+    private Set<CartItem> updateCartItems(Long id, ShoppingCart shoppingCart,
+                                          CartItem cartItem) {
+        Set<CartItem> cartItemSet = new HashSet<>();
+        for (CartItem c : shoppingCart.getCartItemSet()) {
+            if (c.getId() == id) {
+                cartItemSet.add(cartItem);
+            } else {
+                cartItemSet.add(c);
+            }
+        }
+        return cartItemSet;
     }
 }

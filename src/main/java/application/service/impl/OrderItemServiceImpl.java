@@ -19,7 +19,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemMapper orderItemMapper;
 
     @Override
-    public List<OrderItemResponseDto> getAllOrderItemsDtoByOrderId(Long orderId) {
+    public List<OrderItemResponseDto> getAllOrderItemsDtosByOrderId(Long orderId) {
         return orderItemRepository.findAllByOrderId(orderId)
                 .stream()
                 .map(orderItemMapper::toOrderItemResponseDto)

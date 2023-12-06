@@ -51,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void updateOrderStatus(Long id, OrderRequestStatusDto dto) {
         Order order = orderRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException("Can't find order by id " + id));
+                -> new EntityNotFoundException(FIND_ORDER_EXCEPTION + id));
         order.setStatus(dto.getStatus());
         orderRepository.save(order);
     }

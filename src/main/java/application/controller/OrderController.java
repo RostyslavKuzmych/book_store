@@ -6,6 +6,7 @@ import application.dto.order.OrderRequestStatusDto;
 import application.dto.order.OrderResponseDto;
 import application.model.Order;
 import application.model.User;
+import application.repository.ShoppingCartRepository;
 import application.security.BelongingOrderToUserCheck;
 import application.service.OrderItemService;
 import application.service.OrderService;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     private final OrderService orderService;
     private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartRepository shoppingCartRepository;
     private final OrderItemService orderItemService;
     private final BelongingOrderToUserCheck belongingOrderToUserCheck;
 
@@ -45,7 +47,8 @@ public class OrderController {
                                        @RequestBody @Valid OrderRequestShippingAddressDto dto) {
         User user = (User) authentication.getPrincipal();
         return orderService
-                .createOrder(shoppingCartService.findByUserId(user.getId()), dto);
+                .createOrder(shoppingCartRepository
+                        .findShoppingCartByUserId(user.getId()), dto);
     }
 
     @GetMapping
@@ -75,7 +78,7 @@ public class OrderController {
     public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Authentication authentication,
                                                                 @PathVariable Long orderId) {
         belongingOrderToUserCheck.checkBelongingOrderToUser(authentication, orderId);
-        return orderItemService.getAllOrderItemsDtoByOrderId(orderId);
+        return orderItemService.getAllOrderItemsDtosByOrderId(orderId);
     }
 
     @GetMapping("/{orderId}/items/{itemId}")

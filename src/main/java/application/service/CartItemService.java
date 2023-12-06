@@ -7,7 +7,7 @@ import application.model.ShoppingCart;
 public interface CartItemService {
     CartItem findById(Long id);
 
-    void delete(Long id);
+    void deleteById(Long id);
 
     void deleteCartItem(CartItem cartItem);
 

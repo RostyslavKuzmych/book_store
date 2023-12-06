@@ -3,10 +3,8 @@ package application.controller;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.model.CartItem;
-import application.model.ShoppingCart;
 import application.model.User;
-import application.repository.CartItemRepository;
+import application.repository.ShoppingCartRepository;
 import application.service.CartItemService;
 import application.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,9 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Management shopping carts", description = "Endpoints for managing shopping carts")
 @RequestMapping("/api/cart")
 public class ShoppingCartController {
-    private final CartItemRepository cartItemRepository;
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @PostMapping
     @Operation(summary = "Add a book to the shopping cart",
@@ -42,7 +40,8 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        return shoppingCartService.addBookToShoppingCart(authentication, cartItemRequestDto);
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.addBookToShoppingCart(user, cartItemRequestDto);
     }
 
     @GetMapping
@@ -52,8 +51,7 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        return shoppingCartService.getShoppingCartDto(shoppingCart);
+        return shoppingCartService.getShoppingCartDto(user.getId());
     }
 
     @PutMapping("/cart-items/{id}")
@@ -65,7 +63,8 @@ public class ShoppingCartController {
                                                        @PathVariable Long id,
                                                        @RequestBody @Valid
                                                           ShoppingCartRequestDto requestDto) {
-        return shoppingCartService.updateQuantityById(authentication, id, requestDto);
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.updateQuantityById(user, id, requestDto);
     }
 
     @DeleteMapping("{id}")
@@ -74,6 +73,6 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        cartItemService.delete(id);
+        cartItemService.deleteById(id);
     }
 }

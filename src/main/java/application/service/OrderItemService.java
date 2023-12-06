@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderItemService {
 
-    List<OrderItemResponseDto> getAllOrderItemsDtoByOrderId(Long orderId);
+    List<OrderItemResponseDto> getAllOrderItemsDtosByOrderId(Long orderId);
 
     OrderItemResponseDto getOrderItemResponseById(Order order, Long id);
 
