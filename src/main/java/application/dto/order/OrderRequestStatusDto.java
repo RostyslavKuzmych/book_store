@@ -1,9 +1,11 @@
 package application.dto.order;
 
-import application.model.Order;
+import application.model.Status;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class OrderRequestStatusDto {
-    private Order.Status status;
+    @NotNull
+    private Status status;
 }

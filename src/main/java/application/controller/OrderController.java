@@ -4,7 +4,9 @@ import application.dto.item.OrderItemResponseDto;
 import application.dto.order.OrderRequestShippingAddressDto;
 import application.dto.order.OrderRequestStatusDto;
 import application.dto.order.OrderResponseDto;
+import application.model.Order;
 import application.model.User;
+import application.security.BelongingOrderToUserCheck;
 import application.service.OrderItemService;
 import application.service.OrderService;
 import application.service.ShoppingCartService;
@@ -33,6 +35,7 @@ public class OrderController {
     private final OrderService orderService;
     private final ShoppingCartService shoppingCartService;
     private final OrderItemService orderItemService;
+    private final BelongingOrderToUserCheck belongingOrderToUserCheck;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,7 +54,7 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     public List<OrderResponseDto> getAllOrders(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return orderService.getListOrderResponseDtos(user.getId());
+        return orderService.findAllByUserId(user.getId());
     }
 
     @PatchMapping("/{id}")
@@ -71,7 +74,8 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Authentication authentication,
                                                                 @PathVariable Long orderId) {
-        return orderItemService.getAllOrderItemsDtoByOrderId(authentication, orderId);
+        belongingOrderToUserCheck.checkBelongingOrderToUser(authentication, orderId);
+        return orderItemService.getAllOrderItemsDtoByOrderId(orderId);
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
@@ -82,7 +86,8 @@ public class OrderController {
     public OrderItemResponseDto getSpecificOrderItem(Authentication authentication,
                                                      @PathVariable Long orderId,
                                                      @PathVariable Long itemId) {
+        Order order = belongingOrderToUserCheck.checkBelongingOrderToUser(authentication, orderId);
         return orderItemService
-                .getOrderItemResponseById(authentication, orderId, itemId);
+                .getOrderItemResponseById(order, itemId);
     }
 }

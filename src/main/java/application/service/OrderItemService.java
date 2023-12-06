@@ -1,15 +1,15 @@
 package application.service;
 
 import application.dto.item.OrderItemResponseDto;
+import application.model.Order;
 import application.model.OrderItem;
 import java.util.List;
-import org.springframework.security.core.Authentication;
 
 public interface OrderItemService {
-    OrderItem save(OrderItem orderItem);
 
-    List<OrderItemResponseDto> getAllOrderItemsDtoByOrderId(Authentication authentication,
-                                                            Long orderId);
+    List<OrderItemResponseDto> getAllOrderItemsDtoByOrderId(Long orderId);
 
-    OrderItemResponseDto getOrderItemResponseById(Authentication a, Long orderId, Long id);
+    OrderItemResponseDto getOrderItemResponseById(Order order, Long id);
+
+    OrderItemResponseDto save(OrderItem orderItem);
 }

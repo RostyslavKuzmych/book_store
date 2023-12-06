@@ -18,13 +18,11 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Data
-@NoArgsConstructor
 @SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 @Entity
@@ -34,7 +32,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -58,14 +57,4 @@ public class Order {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
-
-    public enum Status {
-        PROCESSED,
-        SHIPPED,
-        DELIVERED,
-        CANCELLED,
-        RETURNED,
-        RECEIVED,
-        PENDING
-    }
 }

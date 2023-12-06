@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
-    private final CartItemMapper cartItemMapper;
     private final CartItemService cartItemService;
 
     @Override
@@ -51,7 +50,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = findByUserId(user.getId());
         CartItem cartItem = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
         addCartItemToShoppingCart(shoppingCart, cartItem);
-        return getShoppingCartDto(shoppingCart);
+        return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
     @Override
@@ -66,16 +65,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
         }
         return cartItemSet;
-    }
-
-    @Override
-    public ShoppingCartResponseDto getShoppingCartDto(ShoppingCart shoppingCart) {
-        ShoppingCartResponseDto responseDto = shoppingCartMapper.toResponseDto(shoppingCart);
-        responseDto.setCartItems(shoppingCart.getCartItemSet()
-                .stream()
-                .map(cartItemMapper::toCartItemResponseDto)
-                .collect(Collectors.toSet()));
-        return responseDto;
     }
 
     @Override
@@ -105,6 +94,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = findByUserId(user.getId());
         shoppingCart.setCartItemSet(updateSetOfCartItem(id, shoppingCart, cartItem));
         save(shoppingCart);
-        return getShoppingCartDto(shoppingCart);
+        return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 }

@@ -18,8 +18,6 @@ public interface ShoppingCartService {
 
     Set<CartItem> updateSetOfCartItem(Long id, ShoppingCart s, CartItem c);
 
-    ShoppingCartResponseDto getShoppingCartDto(ShoppingCart shoppingCart);
-
     void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem);
 
     void clearShoppingCart(ShoppingCart shoppingCart);

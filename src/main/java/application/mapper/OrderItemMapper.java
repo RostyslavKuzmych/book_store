@@ -11,6 +11,7 @@ import org.mapstruct.Named;
 
 @Mapper(config = MapperConfig.class)
 public interface OrderItemMapper {
+
     @Mapping(target = "id", ignore = true)
     OrderItem toOrderItem(CartItem cartItem);
 

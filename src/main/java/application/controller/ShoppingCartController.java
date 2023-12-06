@@ -42,10 +42,6 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        User user = (User) authentication.getPrincipal();
-        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        CartItem cartItem = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
-        shoppingCartService.addCartItemToShoppingCart(shoppingCart, cartItem);
         return shoppingCartService.addBookToShoppingCart(authentication, cartItemRequestDto);
     }
 

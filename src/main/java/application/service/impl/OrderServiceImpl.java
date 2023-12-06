@@ -10,6 +10,7 @@ import application.model.CartItem;
 import application.model.Order;
 import application.model.OrderItem;
 import application.model.ShoppingCart;
+import application.model.Status;
 import application.repository.OrderRepository;
 import application.service.CartItemService;
 import application.service.OrderItemService;
@@ -44,47 +45,33 @@ public class OrderServiceImpl implements OrderService {
         Set<CartItem> cartItemSet = shoppingCart.getCartItemSet();
         shoppingCartService.clearShoppingCart(shoppingCart);
         deleteAllCartItems(cartItemSet);
-        OrderResponseDto responseDto = orderMapper.toResponseDto(order);
-        return setOrderItemsDtos(responseDto, order);
-    }
-
-    @Override
-    public List<OrderResponseDto> getListOrderResponseDtos(Long id) {
-        return findAllByUserId(id)
-                .stream()
-                .map(orderMapper::toResponseDto)
-                .map(c -> setOrderItemsDtos(c, findByOrderId(c.getId())
-                )).toList();
-
+        return orderMapper.toResponseDto(order);
     }
 
     @Override
     public void updateOrderStatus(Long id, OrderRequestStatusDto dto) {
-        Order order = findByOrderId(id);
+        Order order = orderRepository.findById(id).orElseThrow(()
+                -> new EntityNotFoundException("Can't find order by id " + id));
         order.setStatus(dto.getStatus());
         orderRepository.save(order);
     }
 
     @Override
-    public List<Order> findAllByUserId(Long id) {
-        return orderRepository.findAllByUserId(id);
+    public List<OrderResponseDto> findAllByUserId(Long id) {
+        return orderRepository
+                .findAllByUserId(id)
+                .stream()
+                .map(orderMapper::toResponseDto).toList();
     }
 
-    @Override
-    public Order findByOrderId(Long id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() ->
-                        new EntityNotFoundException(FIND_ORDER_EXCEPTION + id));
-    }
-
-    private Order prepareOrder(ShoppingCart sc, OrderRequestShippingAddressDto dto) {
+    private Order prepareOrder(ShoppingCart shoppingCart, OrderRequestShippingAddressDto dto) {
         Order order = new Order();
         order.setShippingAddress(dto.getShippingAddress());
         order.setOrderDate(LocalDateTime.now());
-        order.setUser(sc.getUser());
-        order.setStatus(Order.Status.RECEIVED);
+        order.setUser(shoppingCart.getUser());
+        order.setStatus(Status.RECEIVED);
         Order savedOrder = orderRepository.save(order);
-        order.setItemSet(setOrderItemsToOrderFromShoppingCart(savedOrder, sc));
+        order.setItemSet(populateWithOrderItems(savedOrder, shoppingCart));
         order.setTotal(getTotalPrice(order.getItemSet()));
         return order;
     }
@@ -96,14 +83,6 @@ public class OrderServiceImpl implements OrderService {
         return orderItem;
     }
 
-    private OrderResponseDto setOrderItemsDtos(OrderResponseDto dto, Order order) {
-        dto.setOrderItems(order.getItemSet()
-                .stream()
-                .map(orderItemMapper::toOrderItemResponseDto)
-                .collect(Collectors.toSet()));
-        return dto;
-    }
-
     private BigDecimal getTotalPrice(Set<OrderItem> orderItems) {
         BigDecimal bigDecimal = orderItems.stream()
                 .map(OrderItem::getPrice)
@@ -111,8 +90,8 @@ public class OrderServiceImpl implements OrderService {
         return bigDecimal;
     }
 
-    private Set<OrderItem> setOrderItemsToOrderFromShoppingCart(Order order,
-                                                             ShoppingCart shoppingCart) {
+    private Set<OrderItem> populateWithOrderItems(Order order,
+                                                  ShoppingCart shoppingCart) {
         Set<OrderItem> items = shoppingCart.getCartItemSet()
                 .stream()
                 .map(orderItemMapper::toOrderItem)
