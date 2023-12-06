@@ -16,7 +16,7 @@ public interface ShoppingCartService {
 
     ShoppingCart createShoppingCart(User user);
 
-    Set<CartItem> updateSetOfCartItem(Long id, ShoppingCart s, CartItem c);
+    Set<CartItem> updateCartItems(Long id, ShoppingCart s, CartItem c);
 
     ShoppingCartResponseDto getShoppingCartDto(ShoppingCart shoppingCart);
 

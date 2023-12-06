@@ -54,7 +54,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public Set<CartItem> updateSetOfCartItem(Long id, ShoppingCart shoppingCart,
+    public Set<CartItem> updateCartItems(Long id, ShoppingCart shoppingCart,
                                              CartItem cartItem) {
         Set<CartItem> cartItemSet = new HashSet<>();
         for (CartItem c : shoppingCart.getCartItemSet()) {
@@ -96,7 +96,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         cartItem.setQuantity(requestDto.getQuantity());
         cartItemService.save(cartItem);
         ShoppingCart shoppingCart = findByUserId(user.getId());
-        shoppingCart.setCartItemSet(updateSetOfCartItem(id, shoppingCart, cartItem));
+        shoppingCart.setCartItemSet(updateCartItems(id, shoppingCart, cartItem));
         save(shoppingCart);
         return getShoppingCartDto(shoppingCart);
     }

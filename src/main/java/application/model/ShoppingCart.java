@@ -33,6 +33,7 @@ public class ShoppingCart {
     private Set<CartItem> cartItemSet = new HashSet<>();
 
     @OneToOne
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @Column(nullable = false)

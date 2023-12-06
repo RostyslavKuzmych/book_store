@@ -1,10 +1,10 @@
 package application.dto.shopping.cart;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
 public class ShoppingCartRequestDto {
-    @Min(1)
+    @Positive
     private Integer quantity;
 }
