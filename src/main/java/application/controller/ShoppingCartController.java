@@ -3,7 +3,6 @@ package application.controller;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.model.ShoppingCart;
 import application.model.User;
 import application.service.CartItemService;
 import application.service.ShoppingCartService;
@@ -39,7 +38,8 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
-        return shoppingCartService.addBookToShoppingCart(authentication, cartItemRequestDto);
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.addBookToShoppingCart(user, cartItemRequestDto);
     }
 
     @GetMapping
@@ -48,19 +48,19 @@ public class ShoppingCartController {
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        ShoppingCart shoppingCart = shoppingCartService.findByUserId(user.getId());
-        return shoppingCartService.getShoppingCartDto(shoppingCart);
+        return shoppingCartService.getShoppingCartDto(user.getId());
     }
 
     @PutMapping("/cart-items/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update quantity of the book",
-            description = "An endpoint for updating quantity of the book")
+    @Operation(summary = "Update quantity of the books",
+            description = "An endpoint for updating quantity of the books")
     public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
                                                        @PathVariable Long id,
                                                        @RequestBody @Valid
                                                           ShoppingCartRequestDto requestDto) {
-        return shoppingCartService.updateQuantityById(authentication, id, requestDto);
+        User user = (User) authentication.getPrincipal();
+        return shoppingCartService.updateQuantityById(user, id, requestDto);
     }
 
     @DeleteMapping("{id}")
@@ -68,6 +68,6 @@ public class ShoppingCartController {
             description = "An endpoint for deleting a cartItem")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        cartItemService.delete(id);
+        cartItemService.deleteById(id);
     }
 }

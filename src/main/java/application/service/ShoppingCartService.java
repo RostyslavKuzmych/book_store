@@ -3,29 +3,20 @@ package application.service;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.model.CartItem;
 import application.model.ShoppingCart;
 import application.model.User;
-import java.util.Set;
-import org.springframework.security.core.Authentication;
 
 public interface ShoppingCartService {
-    ShoppingCart save(ShoppingCart shoppingCart);
+    void createShoppingCart(User user);
 
-    ShoppingCart findByUserId(Long id);
+    ShoppingCartResponseDto getShoppingCartDto(Long userId);
 
-    ShoppingCart createShoppingCart(User user);
+    void clearShoppingCart(ShoppingCart shoppingCart);
 
-    Set<CartItem> updateCartItems(Long id, ShoppingCart s, CartItem c);
-
-    ShoppingCartResponseDto getShoppingCartDto(ShoppingCart shoppingCart);
-
-    void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem);
-
-    ShoppingCartResponseDto updateQuantityById(Authentication authentication,
+    ShoppingCartResponseDto updateQuantityById(User user,
                                                Long id,
                                                ShoppingCartRequestDto requestDto);
 
-    ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
-                                                         CartItemRequestDto cartItemRequestDto);
+    ShoppingCartResponseDto addBookToShoppingCart(User user,
+                                                  CartItemRequestDto cartItemRequestDto);
 }
