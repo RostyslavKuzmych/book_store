@@ -4,10 +4,8 @@ import application.dto.item.OrderItemResponseDto;
 import application.dto.order.OrderRequestShippingAddressDto;
 import application.dto.order.OrderRequestStatusDto;
 import application.dto.order.OrderResponseDto;
-import application.model.Order;
 import application.model.User;
 import application.repository.ShoppingCartRepository;
-import application.security.BelongingOrderToUserCheck;
 import application.service.OrderItemService;
 import application.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,7 +33,6 @@ public class OrderController {
     private final OrderService orderService;
     private final ShoppingCartRepository shoppingCartRepository;
     private final OrderItemService orderItemService;
-    private final BelongingOrderToUserCheck belongingOrderToUserCheck;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -72,10 +69,9 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all orderItems by order id",
             description = "An endpoint for getting all orderItems by order id")
-    @PreAuthorize("hasRole('USER')")
-    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(Authentication authentication,
-                                                                @PathVariable Long orderId) {
-        belongingOrderToUserCheck.checkBelongingOrderToUser(authentication, orderId);
+    @PreAuthorize("hasRole('USER') and @belongingCheck"
+            + ".checkBelongingOrderToUser(authentication, #orderId)")
+    public List<OrderItemResponseDto> getAllOrderItemsByOrderId(@PathVariable Long orderId) {
         return orderItemService.getAllOrderItemsDtosByOrderId(orderId);
     }
 
@@ -83,12 +79,11 @@ public class OrderController {
     @Operation(summary = "Get a specific orderItem",
             description = "An endpoint for getting a specific orderItem")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('USER')")
-    public OrderItemResponseDto getSpecificOrderItem(Authentication authentication,
-                                                     @PathVariable Long orderId,
+    @PreAuthorize("hasRole('USER') and @belongingCheck"
+            + ".checkBelongingOrderToUser(authentication, #orderId)")
+    public OrderItemResponseDto getSpecificOrderItem(@PathVariable Long orderId,
                                                      @PathVariable Long itemId) {
-        Order order = belongingOrderToUserCheck.checkBelongingOrderToUser(authentication, orderId);
         return orderItemService
-                .getOrderItemResponseById(order, itemId);
+                .getOrderItemResponseById(orderId, itemId);
     }
 }
