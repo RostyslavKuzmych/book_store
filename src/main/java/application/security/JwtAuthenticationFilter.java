@@ -43,17 +43,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.getWriter().write(TOKEN_IS_INVALID);
             return;
         }
-        if (isValid) {
-            String userName = jwtUtil.extractUsername(token);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-            final Authentication authentication
-                    = new UsernamePasswordAuthenticationToken(userDetails,
-                    userDetails.getPassword(), userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            filterChain.doFilter(request, response);
-        }
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.getWriter().write(TOKEN_IS_EXPIRED);
+        String userName = jwtUtil.extractUsername(token);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+        final Authentication authentication
+                = new UsernamePasswordAuthenticationToken(userDetails,
+                userDetails.getPassword(), userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        filterChain.doFilter(request, response);
     }
 
     private String getToken(HttpServletRequest request) {

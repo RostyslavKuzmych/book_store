@@ -26,17 +26,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "ShoppingCart management", description = "Endpoints for shoppingCart management")
-@RequestMapping("/api/carts")
+@RequestMapping("/api/cart")
 @PreAuthorize("hasRole('USER')")
 public class ShoppingCartController {
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;
 
     @PostMapping
-    @Operation(summary = "Add a book to the shopping cart",
-            description = "Endpoint for adding a book to the shopping cart")
+    @Operation(summary = "Add a cartItem to the shopping cart",
+            description = "Endpoint for adding a cartItem to the shopping cart")
     @ResponseStatus(HttpStatus.CREATED)
-    public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
+    public ShoppingCartResponseDto addCartItemToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
         return shoppingCartService.addBookToShoppingCart(user, cartItemRequestDto);
@@ -63,7 +63,7 @@ public class ShoppingCartController {
         return shoppingCartService.updateQuantityById(user, id, requestDto);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Delete a cartItem",
             description = "Endpoint for deleting a cartItem from the db")
     @ResponseStatus(HttpStatus.NO_CONTENT)

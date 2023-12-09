@@ -3,8 +3,7 @@ package application.controller;
 import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
-import application.mapper.BookMapper;
-import application.mapper.CategoryMapper;
+import application.service.BookService;
 import application.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,8 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
-    private final BookMapper bookMapper;
+    private final BookService bookService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -84,6 +82,6 @@ public class CategoryController {
     @Operation(summary = "Get all books by category id",
             description = "Endpoint for getting all books by category id from the db")
     public List<BookDtoWithoutCategoriesIds> getBooksByCategoryId(@PathVariable Long id) {
-        return categoryService.getBooksByCategoryId(id);
+        return bookService.getBookDtosByCategoryId(id);
     }
 }

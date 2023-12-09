@@ -1,13 +1,11 @@
 package application.service.impl;
 
-import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
 import application.exception.EntityNotFoundException;
 import application.mapper.CategoryMapper;
 import application.model.Category;
 import application.repository.CategoryRepository;
-import application.service.BookService;
 import application.service.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +18,6 @@ public class CategoryServiceImpl implements CategoryService {
     private static final String FIND_EXCEPTION = "Can't find category by id ";
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private final BookService bookService;
 
     @Override
     public List<CategoryDto> findAll(Pageable pageable) {
@@ -32,18 +29,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getById(Long categoryId) {
-        Category category = findById(categoryId);
-        return categoryMapper.toDto(category);
+        return categoryMapper.toDto(findById(categoryId));
     }
 
     @Override
     public CategoryDto save(CategoryRequestDto categoryDto) {
         return categoryMapper.toDto(categoryRepository.save(categoryMapper.toEntity(categoryDto)));
-    }
-
-    @Override
-    public List<BookDtoWithoutCategoriesIds> getBooksByCategoryId(Long categoryId) {
-        return bookService.getBookDtosByCategoryId(categoryId);
     }
 
     @Override

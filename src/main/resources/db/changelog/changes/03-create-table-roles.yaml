@@ -14,7 +14,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: role_name
+                  name: roleName
                   type: varchar(255)
                   constraints:
                     nullable: false

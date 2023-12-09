@@ -16,7 +16,7 @@ import org.mapstruct.MappingTarget;
 public interface BookMapper {
     BookDto toDto(Book book);
 
-    BookDtoWithoutCategoriesIds toDtoWithoutCategories(Book book);
+    BookDtoWithoutCategoriesIds toDtoWithoutCategoriesIds(Book book);
 
     Book toModel(CreateBookRequestDto requestDto);
 

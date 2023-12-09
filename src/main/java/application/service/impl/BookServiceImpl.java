@@ -77,7 +77,7 @@ public class BookServiceImpl implements BookService {
         return bookRepository
                 .findAllByCategoryId(categoryId)
                 .stream()
-                .map(bookMapper::toDtoWithoutCategories)
+                .map(bookMapper::toDtoWithoutCategoriesIds)
                 .toList();
     }
 

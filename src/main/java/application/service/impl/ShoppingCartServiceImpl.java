@@ -42,9 +42,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
         CartItemResponseDto responseDto
                 = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
-        CartItem cartItem = cartItemRepository.findById(responseDto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(FIND_CART_ITEM_EXCEPTION
-                        + responseDto.getId()));
+        CartItem cartItem = findById(responseDto.getId());
         addCartItemToShoppingCart(shoppingCart, cartItem);
         return shoppingCartMapper.toResponseDto(shoppingCart);
     }

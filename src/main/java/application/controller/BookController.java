@@ -3,7 +3,6 @@ package application.controller;
 import application.dto.book.BookDto;
 import application.dto.book.BookSearchParametersDto;
 import application.dto.book.CreateBookRequestDto;
-import application.mapper.BookMapper;
 import application.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/books")
 public class BookController {
     private final BookService bookService;
-    private final BookMapper bookMapper;
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
@@ -44,12 +42,13 @@ public class BookController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get a book by id",
             description = "Endpoint for getting a book by id from the db")
-    public BookDto getBookById(@PathVariable Long bookId) {
-        return bookService.getBookDtoById(bookId);
+    public BookDto getBookById(@PathVariable Long id) {
+        return bookService.getBookDtoById(id);
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new book",
             description = "Endpoint for saving a book to the db")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
@@ -81,9 +80,7 @@ public class BookController {
             description = "Endpoint for finding a list of books by params from the db")
     public ResponseEntity<List<BookDto>> getAllByParams(BookSearchParametersDto
                                                                     bookSearchParametersDto) {
-        List<BookDto> bookDtoList = bookService.getBookDtosByParameters(bookSearchParametersDto)
-                .stream()
-                .toList();
+        List<BookDto> bookDtoList = bookService.getBookDtosByParameters(bookSearchParametersDto);
         return !bookDtoList.isEmpty()
                 ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)
                 : new ResponseEntity<>(HttpStatus.NOT_FOUND);
