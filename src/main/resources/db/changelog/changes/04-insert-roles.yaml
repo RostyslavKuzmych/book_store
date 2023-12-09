@@ -10,7 +10,7 @@ databaseChangeLog:
                   name: id
                   value: 1
               - column:
-                  name: roleName
+                  name: role_name
                   value: USER
         - insert:
             tableName: roles
@@ -19,5 +19,5 @@ databaseChangeLog:
                   name: id
                   value: 2
               - column:
-                  name: roleName
+                  name: role_name
                   value: ADMIN

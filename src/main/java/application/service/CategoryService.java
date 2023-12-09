@@ -1,21 +1,21 @@
 package application.service;
 
+import application.dto.book.BookDtoWithoutCategoriesIds;
+import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
-import application.model.Book;
-import application.model.Category;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<Category> findAll(Pageable pageable);
+    List<CategoryDto> findAll(Pageable pageable);
 
-    Category getById(Long id);
+    CategoryDto getById(Long categoryId);
 
-    Category save(CategoryRequestDto categoryDto);
+    CategoryDto save(CategoryRequestDto categoryRequestDto);
 
-    List<Book> getBooksByCategoryId(Long id);
+    List<BookDtoWithoutCategoriesIds> getBooksByCategoryId(Long categoryId);
 
-    Category update(Long id, CategoryRequestDto categoryDto);
+    CategoryDto update(Long id, CategoryRequestDto categoryDto);
 
     void deleteById(Long id);
 }

@@ -18,6 +18,6 @@ public class BelongingOrderToUserCheck {
         User user = (User) authentication.getPrincipal();
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(FIND_EXCEPTION + orderId));
-        return order.getUser().getId() == user.getId();
+        return order.getUser().getId().equals(user.getId());
     }
 }

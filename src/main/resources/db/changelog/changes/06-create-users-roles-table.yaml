@@ -14,7 +14,7 @@ databaseChangeLog:
                     nullable: false
                     references: users(id)
               - column:
-                  name: roles_id
+                  name: role_id
                   type: bigint
                   constraints:
                     foreignKeyName: fk_users_roles_role_id

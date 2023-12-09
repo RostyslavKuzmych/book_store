@@ -1,7 +1,9 @@
 package application.service.impl;
 
 import application.dto.cart.item.CartItemRequestDto;
+import application.dto.cart.item.CartItemResponseDto;
 import application.exception.EntityNotFoundException;
+import application.mapper.BookMapper;
 import application.mapper.CartItemMapper;
 import application.model.CartItem;
 import application.model.ShoppingCart;
@@ -15,19 +17,22 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CartItemServiceImpl implements CartItemService {
+    private static final String FIND_EXCEPTION = "Can't find cartItem by id ";
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
     private final BookService bookService;
+    private final BookMapper bookMapper;
 
     @Override
-    public CartItem findById(Long id) {
-        return cartItemRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException("Can't find cartItem by id " + id));
+    public CartItemResponseDto findById(Long cartItemId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(()
+                -> new EntityNotFoundException(FIND_EXCEPTION + cartItemId));
+        return cartItemMapper.toCartItemResponseDto(cartItem);
     }
 
     @Override
-    public void deleteById(Long id) {
-        cartItemRepository.deleteById(id);
+    public void deleteById(Long cartItemId) {
+        cartItemRepository.deleteById(cartItemId);
     }
 
     @Override
@@ -37,15 +42,17 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional
-    public CartItem createCartItem(ShoppingCart shoppingCart, CartItemRequestDto requestDto) {
+    public CartItemResponseDto createCartItem(ShoppingCart shoppingCart,
+                                              CartItemRequestDto requestDto) {
         CartItem cartItem = cartItemMapper.toCartItem(requestDto);
-        cartItem.setBook(bookService.getBookById(cartItem.getBook().getId()));
+        cartItem.setBook(bookMapper
+                .toModelFromDto(bookService.getBookDtoById(cartItem.getBook().getId())));
         cartItem.setShoppingCart(shoppingCart);
-        return cartItemRepository.save(cartItem);
+        return cartItemMapper.toCartItemResponseDto(cartItemRepository.save(cartItem));
     }
 
     @Override
-    public CartItem save(CartItem cartItem) {
-        return cartItemRepository.save(cartItem);
+    public CartItemResponseDto save(CartItem cartItem) {
+        return cartItemMapper.toCartItemResponseDto(cartItemRepository.save(cartItem));
     }
 }

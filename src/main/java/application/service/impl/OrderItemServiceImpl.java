@@ -17,13 +17,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderItemServiceImpl implements OrderItemService {
     private static final String INVALID_ORDER_ITEM_ID = "Invalid orderItem id: ";
-    private static final String FIND_ORDER_EXCEPTION = "Can't find an order by id ";
+    private static final String FIND_ORDER_EXCEPTION = "Can't find order by id ";
     private final OrderItemRepository orderItemRepository;
     private final OrderItemMapper orderItemMapper;
     private final OrderRepository orderRepository;
 
     @Override
-    public List<OrderItemResponseDto> getAllOrderItemsDtosByOrderId(Long orderId) {
+    public List<OrderItemResponseDto> getAllOrderItemDtosByOrderId(Long orderId) {
         return orderItemRepository.findAllByOrderId(orderId)
                 .stream()
                 .map(orderItemMapper::toOrderItemResponseDto)
@@ -31,14 +31,15 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public OrderItemResponseDto getOrderItemResponseById(Long orderId, Long id) {
+    public OrderItemResponseDto getOrderItemResponseById(Long orderId, Long orderItemId) {
         Order order = orderRepository.findById(orderId).orElseThrow(()
                 -> new EntityNotFoundException(FIND_ORDER_EXCEPTION + orderId));
         OrderItem orderItem = order.getItemSet()
                 .stream()
-                .filter(item -> item.getId() == id)
+                .filter(item -> item.getId().equals(orderItemId))
                 .findFirst()
-                .orElseThrow(() -> new InvalidRequestException(INVALID_ORDER_ITEM_ID + id));
+                .orElseThrow(()
+                        -> new InvalidRequestException(INVALID_ORDER_ITEM_ID + orderItemId));
         return orderItemMapper.toOrderItemResponseDto(orderItem);
     }
 

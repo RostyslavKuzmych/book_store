@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
-@Tag(name = "Authenticate user", description = "Endpoint for management users")
+@RequestMapping("/api/auth")
+@Tag(name = "User management", description = "Endpoints for user management")
 public class AuthenticationController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
     @PostMapping("/registration")
-    @Operation(summary = "Authenticate user", description = "Endpoint for authentication")
+    @Operation(summary = "Authenticate user", description = "Endpoint for user authentication")
     public UserResponseDto register(@RequestBody @Valid
                                         UserRegistrationRequestDto
                                                 requestDto) throws RegistrationException {
@@ -33,7 +33,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Login user", description = "Endpoint to login user")
+    @Operation(summary = "Login user", description = "Endpoint for user login")
     public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
     }

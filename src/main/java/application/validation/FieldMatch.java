@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FieldMatch {
-    String message() default "Invalid repeated password";
+    String message() default "Repeated password is invalid";
     Class<?>[] groups() default{};
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,6 +1,6 @@
 package application.controller;
 
-import application.dto.book.BookDtoWithoutCategoryIds;
+import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
 import application.mapper.BookMapper;
@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Tag(name = "Management categories", description = "Endpoints for management categories")
+@Tag(name = "Category management", description = "Endpoints for category management")
 @RequiredArgsConstructor
 @RequestMapping("/api/categories")
 public class CategoryController {
@@ -37,43 +37,43 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a category", description
-            = "An endpoint for creating a category")
-    public CategoryDto createCategory(@RequestBody @Valid CategoryRequestDto c) {
-        return categoryMapper.toDto(categoryService.save(c));
+            = "Endpoint for creating a category to the db")
+    public CategoryDto createCategory(@RequestBody @Valid CategoryRequestDto requestDto) {
+        return categoryService.save(requestDto);
     }
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all categories", description
-            = "An endpoint for getting all categories")
+            = "Endpoint for getting all categories from the db")
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryDto> getAll(Pageable pageable) {
-        return categoryService.findAll(pageable).stream().map(categoryMapper::toDto).toList();
+        return categoryService.findAll(pageable);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get a category by id", description
-            = "An endpoint for getting a category by id")
+            = "Endpoint for getting a category by id from the db")
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto getCategoryById(@PathVariable Long id) {
-        return categoryMapper.toDto(categoryService.getById(id));
+        return categoryService.getById(id);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update a category by id", description
-            = "An endpoint for updating a category by id")
+            = "Endpoint for updating a category by id in the db")
     @ResponseStatus(HttpStatus.CONTINUE)
     public CategoryDto updateCategory(@PathVariable Long id,
-                                      @RequestBody CategoryRequestDto categoryDto) {
-        return categoryMapper.toDto(categoryService.update(id, categoryDto));
+                                      @RequestBody @Valid CategoryRequestDto categoryDto) {
+        return categoryService.update(id, categoryDto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete a category by id", description
-            = "An endpoint for deleting a category by id")
+            = "Endpoint for deleting a category by id from the db")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteById(id);
@@ -82,9 +82,8 @@ public class CategoryController {
     @GetMapping("/{id}/books")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books by category id",
-            description = "An endpoint for getting all books by category id")
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id) {
-        return categoryService.getBooksByCategoryId(id)
-                .stream().map(bookMapper::toDtoWithoutCategories).toList();
+            description = "Endpoint for getting all books by category id from the db")
+    public List<BookDtoWithoutCategoriesIds> getBooksByCategoryId(@PathVariable Long id) {
+        return categoryService.getBooksByCategoryId(id);
     }
 }

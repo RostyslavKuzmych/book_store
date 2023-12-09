@@ -49,19 +49,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrderStatus(Long id, OrderRequestStatusDto dto) {
-        Order order = orderRepository.findById(id).orElseThrow(()
-                -> new EntityNotFoundException(FIND_ORDER_EXCEPTION + id));
+    public void updateOrderStatus(Long orderId, OrderRequestStatusDto dto) {
+        Order order = orderRepository.findById(orderId).orElseThrow(()
+                -> new EntityNotFoundException(FIND_ORDER_EXCEPTION + orderId));
         order.setStatus(dto.getStatus());
         orderRepository.save(order);
     }
 
     @Override
-    public List<OrderResponseDto> findAllByUserId(Long id) {
+    public List<OrderResponseDto> findAllByUserId(Long userId) {
         return orderRepository
-                .findAllByUserId(id)
+                .findAllByUserId(userId)
                 .stream()
-                .map(orderMapper::toResponseDto).toList();
+                .map(orderMapper::toResponseDto)
+                .toList();
     }
 
     private Order prepareOrder(ShoppingCart shoppingCart, OrderRequestShippingAddressDto dto) {

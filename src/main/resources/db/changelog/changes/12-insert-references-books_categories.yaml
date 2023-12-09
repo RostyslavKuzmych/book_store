@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert-references-books-categories
+      id: insert-references-books_categories
       author: rostyslav_kuzmych
       changes:
         - insert:

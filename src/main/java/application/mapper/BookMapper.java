@@ -2,9 +2,10 @@ package application.mapper;
 
 import application.config.MapperConfig;
 import application.dto.book.BookDto;
-import application.dto.book.BookDtoWithoutCategoryIds;
+import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.book.CreateBookRequestDto;
 import application.model.Book;
+import application.model.Category;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
@@ -15,15 +16,19 @@ import org.mapstruct.MappingTarget;
 public interface BookMapper {
     BookDto toDto(Book book);
 
-    BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
+    BookDtoWithoutCategoriesIds toDtoWithoutCategories(Book book);
 
     Book toModel(CreateBookRequestDto requestDto);
 
+    Book toModelFromDto(BookDto bookDto);
+
     @AfterMapping
     default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {
-        Set<Long> longList = book.getCategories().stream().map(c
-                -> c.getId()).collect(Collectors.toSet());
-        bookDto.setCategoryIds(longList);
+        Set<Long> longList = book.getCategories()
+                .stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet());
+        bookDto.setCategoriesIds((longList));
     }
 
 }

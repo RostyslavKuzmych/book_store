@@ -11,14 +11,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, uses = {CartItemMapper.class})
 public interface ShoppingCartMapper {
 
-    @Mapping(target = "userId", source = "user", qualifiedByName = "getUserId")
+    @Mapping(target = "userId", source = "user", qualifiedByName = "getUserIdByUser")
     @Mapping(target = "cartItems", source = "cartItemSet", qualifiedByName = "getCartItemsDtos")
     ShoppingCartResponseDto toResponseDto(ShoppingCart shoppingCart);
 
-    @Named(value = "getUserId")
+    @Named(value = "getUserIdByUser")
     default Long getUserIdByUser(User user) {
         return user.getId();
     }

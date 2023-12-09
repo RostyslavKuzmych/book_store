@@ -10,7 +10,7 @@ public interface OrderService {
     OrderResponseDto createOrder(ShoppingCart shoppingCart,
                                  OrderRequestShippingAddressDto dto);
 
-    void updateOrderStatus(Long id, OrderRequestStatusDto dto);
+    void updateOrderStatus(Long orderId, OrderRequestStatusDto dto);
 
-    List<OrderResponseDto> findAllByUserId(Long id);
+    List<OrderResponseDto> findAllByUserId(Long userId);
 }

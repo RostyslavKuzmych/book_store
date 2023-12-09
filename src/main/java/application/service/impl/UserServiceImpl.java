@@ -21,17 +21,12 @@ public class UserServiceImpl implements UserService {
     private final ShoppingCartService shoppingCartService;
 
     @Override
-    public UserResponseDto register(UserRegistrationRequestDto inputUser) {
-        if (!userRepository.findUserByEmail(inputUser.getEmail()).isEmpty()) {
-            throw new RegistrationException("You are already registered");
+    public UserResponseDto register(UserRegistrationRequestDto requestDto) {
+        if (!userRepository.findUserByEmail(requestDto.getEmail()).isEmpty()) {
+            throw new RegistrationException("You are already registered!");
         }
-        User user = User.builder()
-                .email(inputUser.getEmail())
-                .password(passwordEncoder.encode(inputUser.getPassword()))
-                .firstName(inputUser.getFirstName())
-                .lastName(inputUser.getLastName())
-                .shippingAddress(inputUser.getShippingAddress())
-                .build();
+        User user = userMapper.toModel(requestDto);
+        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         User savedUser = userRepository.save(user);
         shoppingCartService.createShoppingCart(savedUser);
         return userMapper.toDto(savedUser);

@@ -1,5 +1,7 @@
 package application.service;
 
+import application.dto.book.BookDto;
+import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.book.BookSearchParametersDto;
 import application.dto.book.CreateBookRequestDto;
 import application.model.Book;
@@ -7,19 +9,19 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 public interface BookService {
-    Book save(Book book);
+    BookDto save(Book book);
 
-    List<Book> findAll(Pageable pageable);
+    List<BookDto> findAll(Pageable pageable);
 
-    Book getBookById(Long id);
+    BookDto getBookDtoById(Long bookId);
 
-    Book createBook(CreateBookRequestDto requestDto);
+    BookDto createBook(CreateBookRequestDto requestDto);
 
-    Book updateBook(Long id, Book book);
+    BookDto updateBook(Long id, CreateBookRequestDto requestDto);
 
-    void deleteBookById(Long id);
+    void deleteBookById(Long bookId);
 
-    List<Book> booksByParameters(BookSearchParametersDto bookSearchParametersDto);
+    List<BookDto> getBookDtosByParameters(BookSearchParametersDto bookSearchParametersDto);
 
-    List<Book> getBooksByCategoryId(Long id);
+    List<BookDtoWithoutCategoriesIds> getBookDtosByCategoryId(Long categoryId);
 }

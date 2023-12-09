@@ -1,5 +1,7 @@
 package application.service.impl;
 
+import application.dto.book.BookDto;
+import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.book.BookSearchParametersDto;
 import application.dto.book.CreateBookRequestDto;
 import application.exception.EntityNotFoundException;
@@ -14,53 +16,73 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
+    private static final String FIND_EXCEPTION = "Can't find a book by id ";
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
-    public Book save(Book book) {
-        return bookRepository.save(book);
+    public BookDto save(Book book) {
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
     @Override
-    public List<Book> findAll(Pageable pageable) {
-        return bookRepository.findAll(pageable).stream().toList();
+    public List<BookDto> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 
     @Override
-    public Book createBook(CreateBookRequestDto requestDto) {
+    public BookDto createBook(CreateBookRequestDto requestDto) {
         return save(bookMapper.toModel(requestDto));
     }
 
     @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Can't get book by id " + id));
+    public BookDto getBookDtoById(Long bookId) {
+        Book book = findById(bookId);
+        return bookMapper.toDto(book);
     }
 
     @Override
-    public Book updateBook(Long id, Book inputBook) {
-        inputBook.setId(id);
-        return bookRepository.save(inputBook);
+    public BookDto updateBook(Long bookId, CreateBookRequestDto requestDto) {
+        Book book = findById(bookId);
+        Book inputBook = bookMapper.toModel(requestDto);
+        inputBook.setId(bookId);
+        return bookMapper.toDto(bookRepository.save(inputBook));
     }
 
     @Override
-    public void deleteBookById(Long id) {
-        bookRepository.deleteById(id);
+    public void deleteBookById(Long bookId) {
+        bookRepository.deleteById(bookId);
     }
 
     @Override
-    public List<Book> booksByParameters(BookSearchParametersDto bookSearchParametersDto) {
+    public List<BookDto> getBookDtosByParameters(
+            BookSearchParametersDto bookSearchParametersDto) {
         Specification<Book> specification = bookSpecificationBuilder.build(bookSearchParametersDto);
-        return bookRepository.findAll(specification);
+        return bookRepository
+                .findAll(specification)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 
     @Override
-    public List<Book> getBooksByCategoryId(Long id) {
-        return bookRepository.findAllByCategoryId(id);
+    public List<BookDtoWithoutCategoriesIds> getBookDtosByCategoryId(Long categoryId) {
+        return bookRepository
+                .findAllByCategoryId(categoryId)
+                .stream()
+                .map(bookMapper::toDtoWithoutCategories)
+                .toList();
+    }
+
+    private Book findById(Long bookId) {
+        return bookRepository.findById(bookId).orElseThrow(
+                () -> new EntityNotFoundException(FIND_EXCEPTION + bookId));
     }
 }

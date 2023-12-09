@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Email {
-    String message() default "Invalid input email";
+    String message() default "Input email is invalid";
     Class<?>[] groups() default{};
     Class<? extends Payload>[] payload() default {};
 }

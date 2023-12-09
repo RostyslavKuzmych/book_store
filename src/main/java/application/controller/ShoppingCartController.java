@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Management shopping carts", description = "Endpoints for managing shopping carts")
-@RequestMapping("/api/cart")
+@Tag(name = "ShoppingCart management", description = "Endpoints for shoppingCart management")
+@RequestMapping("/api/carts")
 @PreAuthorize("hasRole('USER')")
 public class ShoppingCartController {
     private final CartItemService cartItemService;
@@ -34,7 +34,7 @@ public class ShoppingCartController {
 
     @PostMapping
     @Operation(summary = "Add a book to the shopping cart",
-            description = "An endpoint for adding a book to the shopping cart")
+            description = "Endpoint for adding a book to the shopping cart")
     @ResponseStatus(HttpStatus.CREATED)
     public ShoppingCartResponseDto addBookToShoppingCart(Authentication authentication,
                                     @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
@@ -43,8 +43,8 @@ public class ShoppingCartController {
     }
 
     @GetMapping
-    @Operation(summary = "Get the shoppingCart",
-            description = "An endpoint for getting user's shoppingCart")
+    @Operation(summary = "Get a shoppingCart",
+            description = "Endpoint for getting user's shoppingCart from the db")
     @ResponseStatus(HttpStatus.OK)
     public ShoppingCartResponseDto getShoppingCart(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -53,8 +53,8 @@ public class ShoppingCartController {
 
     @PutMapping("/cart-items/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update quantity of the books",
-            description = "An endpoint for updating quantity of the books")
+    @Operation(summary = "Update books quantity",
+            description = "Endpoint for updating books quantity in the db")
     public ShoppingCartResponseDto updateQuantityById(Authentication authentication,
                                                        @PathVariable Long id,
                                                        @RequestBody @Valid
@@ -65,7 +65,7 @@ public class ShoppingCartController {
 
     @DeleteMapping("{id}")
     @Operation(summary = "Delete a cartItem",
-            description = "An endpoint for deleting a cartItem")
+            description = "Endpoint for deleting a cartItem from the db")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         cartItemService.deleteById(id);

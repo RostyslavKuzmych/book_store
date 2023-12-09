@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Book management", description = "Endpoints for managing books")
+@Tag(name = "Book management", description = "Endpoints for book management")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/books")
@@ -34,54 +34,55 @@ public class BookController {
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
-    @Operation(summary = "Get all books from db",
-            description = "Get a list of all available books")
+    @Operation(summary = "Get all books from the db",
+            description = "Endpoint for getting a list of all books")
     public List<BookDto> getAll(Pageable pageable) {
-        return bookService.findAll(pageable)
-                .stream()
-                .map(b -> bookMapper.toDto(b))
-                .toList();
+        return bookService.findAll(pageable);
     }
 
-    @PreAuthorize("hasRole('USER')")
-    @Operation(summary = "Get a book by id", description = "Get a book by id from db")
     @GetMapping("/{id}")
-    public BookDto getBookById(@PathVariable Long id) {
-        return bookMapper.toDto(bookService.getBookById(id));
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Get a book by id",
+            description = "Endpoint for getting a book by id from the db")
+    public BookDto getBookById(@PathVariable Long bookId) {
+        return bookService.getBookDtoById(bookId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new book", description = "Can save inputs to db")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Create a new book",
+            description = "Endpoint for saving a book to the db")
     public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
-        return bookMapper.toDto(bookService.createBook(requestDto));
+        return bookService.createBook(requestDto);
     }
 
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Operation(summary = "Update a book by id", description = "Update a book in db by id")
-    @PutMapping("/{id}")
-    public BookDto updateBook(@PathVariable Long id, @RequestBody CreateBookRequestDto requestDto) {
-        return bookMapper.toDto(bookService.updateBook(id, bookMapper.toModel(requestDto)));
+    @Operation(summary = "Update a book by id",
+            description = "Endpoint for updating a book in the db by id")
+    public BookDto updateBook(@PathVariable Long id,
+                              @Valid @RequestBody CreateBookRequestDto requestDto) {
+        return bookService.updateBook(id, requestDto);
     }
 
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Delete a book by id", description = "Delete a book in db by id")
-    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a book by id",
+            description = "Endpoint for deleting a book from the db by id")
     public void deleteBookById(@PathVariable Long id) {
         bookService.deleteBookById(id);
     }
 
-    @PreAuthorize("hasRole('USER')")
     @GetMapping("/search")
-    @Operation(summary = "Find all books by inputs",
-            description = "Find a list of books by inputs from db")
-    public ResponseEntity<List<BookDto>> getAllByInputs(BookSearchParametersDto
+    @PreAuthorize("hasRole('USER')")
+    @Operation(summary = "Find all books by params",
+            description = "Endpoint for finding a list of books by params from the db")
+    public ResponseEntity<List<BookDto>> getAllByParams(BookSearchParametersDto
                                                                     bookSearchParametersDto) {
-        List<BookDto> bookDtoList = bookService.booksByParameters(bookSearchParametersDto)
+        List<BookDto> bookDtoList = bookService.getBookDtosByParameters(bookSearchParametersDto)
                 .stream()
-                .map(bookMapper::toDto)
                 .toList();
         return !bookDtoList.isEmpty()
                 ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)

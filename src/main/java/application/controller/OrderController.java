@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Management orders", description = "Endpoints for management orders")
+@Tag(name = "Order management", description = "Endpoints for order management")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -36,7 +36,8 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Place an order", description = "An endpoint for placing an order")
+    @Operation(summary = "Place an order",
+            description = "Endpoint for saving an order to the db")
     @PreAuthorize("hasRole('USER')")
     public OrderResponseDto placeOrder(Authentication authentication,
                                        @RequestBody @Valid OrderRequestShippingAddressDto dto) {
@@ -48,7 +49,8 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get all orders", description = "An endpoint for getting all orders")
+    @Operation(summary = "Get all orders",
+            description = "Endpoint for getting all orders from the db")
     @PreAuthorize("hasRole('USER')")
     public List<OrderResponseDto> getAllOrders(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -57,8 +59,8 @@ public class OrderController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Update order status",
-            description = "An endpoint for updating an order status")
+    @Operation(summary = "Update an order status",
+            description = "Endpoint for updating an order status")
     @PreAuthorize("hasRole('ADMIN')")
     public void updateOrderStatus(@PathVariable Long id,
                                   @RequestBody OrderRequestStatusDto dto) {
@@ -68,16 +70,16 @@ public class OrderController {
     @GetMapping("/{orderId}/items")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all orderItems by order id",
-            description = "An endpoint for getting all orderItems by order id")
+            description = "Endpoint for getting all orderItems by order id from the db")
     @PreAuthorize("hasRole('USER') and @belongingCheck"
             + ".checkBelongingOrderToUser(authentication, #orderId)")
     public List<OrderItemResponseDto> getAllOrderItemsByOrderId(@PathVariable Long orderId) {
-        return orderItemService.getAllOrderItemsDtosByOrderId(orderId);
+        return orderItemService.getAllOrderItemDtosByOrderId(orderId);
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
     @Operation(summary = "Get a specific orderItem",
-            description = "An endpoint for getting a specific orderItem")
+            description = "Endpoint for getting a specific orderItem from the db")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasRole('USER') and @belongingCheck"
             + ".checkBelongingOrderToUser(authentication, #orderId)")
