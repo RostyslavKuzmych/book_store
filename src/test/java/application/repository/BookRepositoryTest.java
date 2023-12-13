@@ -1,6 +1,7 @@
 package application.repository;
 
 import static org.junit.Assert.assertEquals;
+
 import application.model.Book;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class BookRepositoryTest {
     private static final Long NOVEL_ID = 2L;
-    private static final Long FICTION_ID = 1l;
+    private static final Long FICTION_ID = 1L;
     private static final Long NON_EXISTED_CATEGORY_ID = 10L;
     @Autowired
     private BookRepository bookRepository;

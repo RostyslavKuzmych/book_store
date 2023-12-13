@@ -1,8 +1,12 @@
 package application.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
@@ -10,6 +14,8 @@ import application.exception.EntityNotFoundException;
 import application.mapper.CategoryMapper;
 import application.model.Category;
 import application.repository.CategoryRepository;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,10 +25,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
-
-import java.util.List;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
@@ -34,15 +36,13 @@ class CategoryServiceImplTest {
     private static final Long INVALID_ID = 11L;
     private static final Long VALID_ID = 1L;
     private static final Integer ONE_TIME = 1;
-
-
+    private static List<Category> categories;
     @Mock
     private CategoryMapper categoryMapper;
     @Mock
     private CategoryRepository categoryRepository;
     @InjectMocks
     private CategoryServiceImpl categoryServiceImpl;
-    private static List<Category> categories;
 
     @BeforeAll
     static void beforeAll() {
@@ -163,7 +163,8 @@ class CategoryServiceImplTest {
         CategoryDto mysteryDto = new CategoryDto().setName(mystery.getName())
                         .setDescription(mystery.getDescription());
 
-        when(categoryRepository.findById(VALID_ID)).thenReturn(Optional.ofNullable(categories.get(NOVEL_ID)));
+        when(categoryRepository.findById(VALID_ID))
+                .thenReturn(Optional.ofNullable(categories.get(NOVEL_ID)));
         when(categoryMapper.toEntity(mysteryRequestDto)).thenReturn(mystery);
         when(categoryRepository.save(mystery)).thenReturn(mystery);
         when(categoryMapper.toDto(mystery)).thenReturn(mysteryDto);

@@ -2,15 +2,16 @@ package application.config;
 
 import org.testcontainers.containers.MySQLContainer;
 
-public class CustomMySQLContainer extends MySQLContainer<CustomMySQLContainer> {
+public class CustomMysqlContainer extends MySQLContainer<CustomMysqlContainer> {
     private static final String DB_IMAGE = "mysql:8";
-    private static CustomMySQLContainer mySQLContainer;
-    private CustomMySQLContainer() {
+    private static CustomMysqlContainer mySQLContainer;
+
+    private CustomMysqlContainer() {
         super(DB_IMAGE);
     }
 
-    public static synchronized CustomMySQLContainer getInstance() {
-        return mySQLContainer == null? new CustomMySQLContainer() : mySQLContainer;
+    public static synchronized CustomMysqlContainer getInstance() {
+        return mySQLContainer == null ? new CustomMysqlContainer() : mySQLContainer;
     }
 
     @Override

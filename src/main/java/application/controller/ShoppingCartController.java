@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Tag(name = "ShoppingCart management", description = "Endpoints for shoppingCart management")
 @RequestMapping("/api/cart")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class ShoppingCartController {
     private final CartItemService cartItemService;
     private final ShoppingCartService shoppingCartService;

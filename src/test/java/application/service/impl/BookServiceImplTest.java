@@ -1,5 +1,13 @@
 package application.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import application.dto.book.BookDto;
 import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.book.BookSearchParametersDto;
@@ -9,27 +17,19 @@ import application.mapper.BookMapper;
 import application.model.Book;
 import application.repository.BookRepository;
 import application.repository.builders.BookSpecificationBuilder;
-import application.service.BookService;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
@@ -42,6 +42,7 @@ class BookServiceImplTest {
     private static final Long INVALID_BOOK_ID = 20L;
     private static final Long VALID_CATEGORY_ID = 1L;
     private static final Integer ONE_TIME = 1;
+    private static List<Book> books;
     @Mock
     private BookRepository bookRepository;
     @Mock
@@ -50,7 +51,6 @@ class BookServiceImplTest {
     private BookSpecificationBuilder specificationBuilder;
     @InjectMocks
     private BookServiceImpl bookServiceImpl;
-    private static List<Book> books;
 
     @BeforeAll
     static void beforeAll() {
@@ -234,10 +234,10 @@ class BookServiceImplTest {
             """)
     void getBookByParams_ValidParams_ReturnExpectedList() {
         BookSearchParametersDto bookSearchParametersDto
-                = new BookSearchParametersDto(new String[]{"1984"},
-                new String[]{"George Orwell"});
-        BookDto book1984Dto = new BookDto()
-                .setTitle(books.get(BOOK_1984_ID).getTitle())
+                        = new BookSearchParametersDto(new String[]{"1984"},
+                                new String[]{"George Orwell"});
+        BookDto book1984Dto
+                = new BookDto().setTitle(books.get(BOOK_1984_ID).getTitle())
                 .setAuthor(books.get(BOOK_1984_ID).getAuthor())
                 .setPrice(books.get(BOOK_1984_ID).getPrice())
                 .setIsbn(books.get(BOOK_1984_ID).getIsbn())

@@ -33,7 +33,7 @@ public class CategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Create a category", description
             = "Endpoint for creating a category to the db")
     public CategoryDto createCategory(@RequestBody @Valid CategoryRequestDto requestDto) {
@@ -41,7 +41,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get all categories", description
             = "Endpoint for getting all categories from the db")
     @ResponseStatus(HttpStatus.OK)
@@ -50,7 +50,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get a category by id", description
             = "Endpoint for getting a category by id from the db")
     @ResponseStatus(HttpStatus.OK)
@@ -59,7 +59,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Update a category by id", description
             = "Endpoint for updating a category by id in the db")
     @ResponseStatus(HttpStatus.CONTINUE)
@@ -69,7 +69,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Delete a category by id", description
             = "Endpoint for deleting a category by id from the db")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -78,7 +78,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/books")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @Operation(summary = "Get all books by category id",
             description = "Endpoint for getting all books by category id from the db")
     public List<BookDtoWithoutCategoriesIds> getBooksByCategoryId(@PathVariable Long id) {
