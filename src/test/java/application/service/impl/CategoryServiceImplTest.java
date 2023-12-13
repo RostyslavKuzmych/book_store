@@ -1,8 +1,9 @@
 package application.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
 import application.exception.EntityNotFoundException;
@@ -18,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +33,7 @@ class CategoryServiceImplTest {
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private static final Long INVALID_ID = 11L;
     private static final Long VALID_ID = 1L;
+    private static final Integer ONE_TIME = 1;
 
 
     @Mock
@@ -78,6 +82,9 @@ class CategoryServiceImplTest {
 
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
+        verify(categoryRepository, times(ONE_TIME))
+                .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
+        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -93,7 +100,11 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(categories.get(FICTION_ID))).thenReturn(categoryDto);
 
         CategoryDto actual = categoryServiceImpl.getById(VALID_ID);
+        assertNotNull(actual);
         assertEquals(categoryDto, actual);
+        verify(categoryRepository, times(ONE_TIME))
+                .findById(VALID_ID);
+        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -107,7 +118,11 @@ class CategoryServiceImplTest {
                 () -> categoryServiceImpl.getById(INVALID_ID));
         String expected = "Can't find category by id " + INVALID_ID;
         String actual = exception.getMessage();
+        assertNotNull(actual);
         assertEquals(expected, actual);
+        verify(categoryRepository, times(ONE_TIME))
+                .findById(INVALID_ID);
+        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -128,7 +143,11 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(horror)).thenReturn(horrorDto);
 
         CategoryDto actual = categoryServiceImpl.save(horrorRequestDto);
+        assertNotNull(actual);
         assertEquals(horrorDto, actual);
+        verify(categoryRepository, times(ONE_TIME))
+                .save(horror);
+        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -150,6 +169,10 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(mystery)).thenReturn(mysteryDto);
 
         CategoryDto actual = categoryServiceImpl.update(VALID_ID, mysteryRequestDto);
+        assertNotNull(actual);
         assertEquals(mysteryDto, actual);
+        verify(categoryRepository, times(ONE_TIME))
+                .findById(VALID_ID);
+        verifyNoMoreInteractions(categoryRepository);
     }
 }

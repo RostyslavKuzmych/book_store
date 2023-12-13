@@ -27,9 +27,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +41,7 @@ class BookServiceImplTest {
     private static final Long VALID_BOOK_ID = 1L;
     private static final Long INVALID_BOOK_ID = 20L;
     private static final Long VALID_CATEGORY_ID = 1L;
+    private static final Integer ONE_TIME = 1;
     @Mock
     private BookRepository bookRepository;
     @Mock
@@ -101,7 +101,10 @@ class BookServiceImplTest {
         when(bookMapper.toDto(theHobbit)).thenReturn(theHobbitDto);
 
         BookDto actual = bookServiceImpl.createBook(theHobbitRequestDto);
+        assertNotNull(actual);
         assertEquals(theHobbitDto, actual);
+        verify(bookRepository, times(ONE_TIME)).save(theHobbit);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -142,6 +145,9 @@ class BookServiceImplTest {
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
+        verify(bookRepository, times(ONE_TIME))
+                .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -163,7 +169,10 @@ class BookServiceImplTest {
         when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID))).thenReturn(prideAndPrejudiceDto);
 
         BookDto actual = bookServiceImpl.getBookDtoById(VALID_BOOK_ID);
+        assertNotNull(actual);
         assertEquals(prideAndPrejudiceDto, actual);
+        verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -179,7 +188,10 @@ class BookServiceImplTest {
                 () -> bookServiceImpl.getBookDtoById(INVALID_BOOK_ID));
         String expected = "Can't find book by id " + INVALID_BOOK_ID;
         String actual = exception.getMessage();
+        assertNotNull(actual);
         assertEquals(expected, actual);
+        verify(bookRepository, times(ONE_TIME)).findById(INVALID_BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -210,7 +222,10 @@ class BookServiceImplTest {
         when(bookMapper.toDto(animalFarm)).thenReturn(animalFarmDto);
 
         BookDto actual = bookServiceImpl.updateBook(VALID_BOOK_ID, animalFarmRequestDto);
+        assertNotNull(actual);
         assertEquals(animalFarmDto, actual);
+        verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -238,7 +253,10 @@ class BookServiceImplTest {
 
         List<BookDto> expected = List.of(book1984Dto);
         List<BookDto> actual = bookServiceImpl.getBookDtosByParameters(bookSearchParametersDto);
+        assertEquals(1, actual.size());
         assertEquals(expected, actual);
+        verify(bookRepository, times(ONE_TIME)).findAll(Specification.where(null));
+        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -264,5 +282,8 @@ class BookServiceImplTest {
                 = bookServiceImpl.getBookDtosByCategoryId(VALID_CATEGORY_ID);
         assertEquals(1, actual.size());
         assertEquals(expected, actual);
+        verify(bookRepository, times(ONE_TIME))
+                .findAllByCategoryId(VALID_CATEGORY_ID);
+        verifyNoMoreInteractions(bookRepository);
     }
 }

@@ -12,8 +12,8 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -21,8 +21,7 @@ import org.hibernate.annotations.Where;
 @Entity
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
-@Setter
-@Getter
+@Data
 @Accessors(chain = true)
 @Table(name = "books")
 public class Book {
@@ -36,6 +35,8 @@ public class Book {
     @Column(unique = true, nullable = false)
     private String isbn;
     @ManyToMany
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JoinTable(name = "books_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
