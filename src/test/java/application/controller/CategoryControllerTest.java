@@ -2,15 +2,20 @@ package application.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import application.dto.book.BookDtoWithoutCategoriesIds;
 import application.dto.category.CategoryDto;
 import application.dto.category.CategoryRequestDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,13 +29,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CategoryControllerTest {
@@ -48,8 +46,8 @@ class CategoryControllerTest {
     private static final String USER = "USER";
     private static final String ADMIN = "ADMIN";
     private static final String PATH = "classpath:database/categories/";
-    private static final String FICTION_DESCRIPTION = "Genre encompassing all types of works " +
-            "created based on imagination or invention";
+    private static final String FICTION_DESCRIPTION = "Genre encompassing all types of works "
+            + "created based on imagination or invention";
     private static final String NOVEL_DESCRIPTION = "Genre represented or exemplified by novels";
     private static final String CLASSICS_DESCRIPTION
             = "Category of literature that encompasses classic works";
@@ -114,8 +112,9 @@ class CategoryControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(API)).andReturn();
 
         List<CategoryDto> expected = categoryList;
-        List<CategoryDto> actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<CategoryDto>>() {});
+        List<CategoryDto> actual = objectMapper
+                .readValue(mvcResult.getResponse().getContentAsString(),
+                    new TypeReference<List<CategoryDto>>() {});
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
     }
@@ -141,9 +140,9 @@ class CategoryControllerTest {
             Verify updateBook() method with correct categoryRequest
             """)
     @Sql(scripts = PATH + "save_category_horror_to_categories_table.sql",
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = PATH + "remove_category_mystery_from_categories_table.sql",
-    executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateBook_ValidCategoryRequest_Success() throws Exception {
         CategoryRequestDto mysteryRequest =
                 new CategoryRequestDto().setName("mystery")
@@ -179,8 +178,9 @@ class CategoryControllerTest {
         MvcResult mvcResult = mockMvc.perform(get(API)).andReturn();
 
         List<CategoryDto> expected = categoryList;
-        List<CategoryDto> actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<CategoryDto>>() {});
+        List<CategoryDto> actual =
+                objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
+                    new TypeReference<List<CategoryDto>>() {});
         assertEquals(expected, actual);
         assertEquals(3, actual.size());
     }
@@ -214,7 +214,7 @@ class CategoryControllerTest {
                 List.of(prideAndPrejudiceDto, book1984Dto);
         List<BookDtoWithoutCategoriesIds> actual
                 = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
-                new TypeReference<List<BookDtoWithoutCategoriesIds>>() {});
+                    new TypeReference<List<BookDtoWithoutCategoriesIds>>() {});
         assertEquals(2, actual.size());
         assertEquals(expected, actual);
     }

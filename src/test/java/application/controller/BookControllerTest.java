@@ -33,9 +33,9 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
+    protected static MockMvc mockMvc;
     private static final String NIGHT_CIRCUS_ID = "/10";
     private static final Long NIGHT_CIRCUS_ID_INTO_DB = 10L;
-    protected static MockMvc mockMvc;
     private static final String GREAT_GATSBY_ID = "/1";
     private static final Long FICTION_ID = 1L;
     private static final Long NOVEL_ID = 2L;
@@ -158,8 +158,8 @@ class BookControllerTest {
             + "save_the_night_circus_book_to_books_table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = PATH
-    + "remove_lord-of-the-rings_book_from_books_table.sql",
-    executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+             + "remove_lord-of-the-rings_book_from_books_table.sql",
+             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("""
             Verify updateBook() with correct bookRequestDto
             """)
@@ -195,8 +195,8 @@ class BookControllerTest {
             Verify deleteBookById() method with correct bookId
             """)
     @Sql(scripts = PATH
-    + "save_harry-potter_book_to_books_table.sql",
-    executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+            + "save_harry-potter_book_to_books_table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteBookById_ValidBookId_Success() throws Exception {
         mockMvc.perform(delete(API + HARRY_POTTER_ID))
                 .andExpect(status().isNoContent());
@@ -219,7 +219,7 @@ class BookControllerTest {
     void getAllByParams_ValidParams_ReturnOneBook() throws Exception {
         BookSearchParametersDto parametersDto
                 = new BookSearchParametersDto(new String[]{"F. Scott Fitzgerald"},
-                new String[]{"The Great Gatsby"});
+                        new String[]{"The Great Gatsby"});
 
         MvcResult mvcResult = mockMvc.perform(get(API + "/search")
                         .param("authors", String.join(",", parametersDto.authors()))
