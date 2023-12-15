@@ -34,9 +34,10 @@ class CategoryServiceImplTest {
     private static final Integer DEFAULT_PAGE_NUMBER = 0;
     private static final Integer DEFAULT_PAGE_SIZE = 20;
     private static final Long INVALID_ID = 11L;
-    private static final Long VALID_ID = 1L;
+    private static final Long VALID_ID = 2L;
     private static final Integer ONE_TIME = 1;
     private static List<Category> categories;
+    private static List<CategoryDto> categoryDtos;
     @Mock
     private CategoryMapper categoryMapper;
     @Mock
@@ -52,7 +53,14 @@ class CategoryServiceImplTest {
                 .setDescription("Magnificent genre");
         Category classics = new Category().setName("Classics")
                 .setDescription("Category of literature that encompasses classic works");
+        CategoryDto fictionDto = new CategoryDto().setName(fiction.getName())
+                .setDescription(fiction.getDescription());
+        CategoryDto novelDto = new CategoryDto().setName(novel.getName())
+                .setDescription(novel.getDescription());
+        CategoryDto classicsDto = new CategoryDto().setName(classics.getName())
+                .setDescription(classics.getDescription());
         categories = List.of(fiction, novel, classics);
+        categoryDtos = List.of(fictionDto, novelDto, classicsDto);
     }
 
     @Test
@@ -60,22 +68,20 @@ class CategoryServiceImplTest {
             Get all categories, returns not an empty list
             """)
     void findAllCategories_ValidPageable_ReturnExpectedList() {
-        CategoryDto fictionDto = new CategoryDto().setName(categories.get(FICTION_ID).getName())
-                .setDescription(categories.get(FICTION_ID).getDescription());
-        CategoryDto novelDto = new CategoryDto().setName(categories.get(NOVEL_ID).getName())
-                .setDescription(categories.get(NOVEL_ID).getDescription());
-        CategoryDto classicsDto = new CategoryDto().setName(categories.get(CLASSICS_ID).getName())
-                .setDescription(categories.get(CLASSICS_ID).getDescription());
-
         PageImpl<Category> categoryPage = new PageImpl<>(categories);
         when(categoryRepository
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE)))
                 .thenReturn(categoryPage);
-        when(categoryMapper.toDto(categories.get(FICTION_ID))).thenReturn(fictionDto);
-        when(categoryMapper.toDto(categories.get(NOVEL_ID))).thenReturn(novelDto);
-        when(categoryMapper.toDto(categories.get(CLASSICS_ID))).thenReturn(classicsDto);
+        when(categoryMapper.toDto(categories.get(FICTION_ID)))
+                .thenReturn(categoryDtos.get(FICTION_ID));
+        when(categoryMapper.toDto(categories.get(NOVEL_ID)))
+                .thenReturn(categoryDtos.get(NOVEL_ID));
+        when(categoryMapper.toDto(categories.get(CLASSICS_ID)))
+                .thenReturn(categoryDtos.get(CLASSICS_ID));
 
-        List<CategoryDto> expected = List.of(fictionDto, novelDto, classicsDto);
+        List<CategoryDto> expected
+                = List.of(categoryDtos.get(FICTION_ID), categoryDtos.get(NOVEL_ID),
+                categoryDtos.get(CLASSICS_ID));
         List<CategoryDto> actual
                 = categoryServiceImpl
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
@@ -92,16 +98,14 @@ class CategoryServiceImplTest {
             Verify the correct categoryDto was returned by categoryId
             """)
     void findCategoryById_ValidCategoryId_ReturnExpectedCategory() {
-        CategoryDto categoryDto = new CategoryDto().setName(categories.get(FICTION_ID).getName())
-                .setDescription(categories.get(FICTION_ID).getDescription());
-
         when(categoryRepository.findById(VALID_ID))
                 .thenReturn(Optional.ofNullable(categories.get(FICTION_ID)));
-        when(categoryMapper.toDto(categories.get(FICTION_ID))).thenReturn(categoryDto);
+        when(categoryMapper.toDto(categories.get(FICTION_ID)))
+                .thenReturn(categoryDtos.get(FICTION_ID));
 
         CategoryDto actual = categoryServiceImpl.getById(VALID_ID);
         assertNotNull(actual);
-        assertEquals(categoryDto, actual);
+        assertEquals(categoryDtos.get(FICTION_ID), actual);
         verify(categoryRepository, times(ONE_TIME))
                 .findById(VALID_ID);
         verifyNoMoreInteractions(categoryRepository);
@@ -127,15 +131,17 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify save() method with correct categoryRequestDto
+            Verify save() method with correct categoryRequest
             """)
     void saveCategory_ValidCategoryRequestDto_ReturnCategoryDto() {
         CategoryRequestDto horrorRequestDto
                 = new CategoryRequestDto().setName("Horror")
                 .setDescription("Unbelievable genre");
-        Category horror = new Category().setName(horrorRequestDto.getName())
+        Category horror = new Category()
+                .setName(horrorRequestDto.getName())
                 .setDescription(horrorRequestDto.getDescription());
-        CategoryDto horrorDto = new CategoryDto().setName(horror.getName())
+        CategoryDto horrorDto = new CategoryDto()
+                .setName(horror.getName())
                 .setDescription(horror.getDescription());
 
         when(categoryMapper.toEntity(horrorRequestDto)).thenReturn(horror);
@@ -155,12 +161,14 @@ class CategoryServiceImplTest {
             Verify update() method with correct params
             """)
     void updateCategoryById_ValidParams_ReturnUpdatedCategoryDto() {
-        CategoryRequestDto mysteryRequestDto
-                = new CategoryRequestDto().setName("Mystery")
+        CategoryRequestDto mysteryRequestDto = new CategoryRequestDto()
+                .setName("Mystery")
                 .setDescription("Worth reading");
-        Category mystery = new Category().setName(mysteryRequestDto.getName())
-                        .setDescription(mysteryRequestDto.getDescription());
-        CategoryDto mysteryDto = new CategoryDto().setName(mystery.getName())
+        Category mystery = new Category()
+                .setName(mysteryRequestDto.getName())
+                .setDescription(mysteryRequestDto.getDescription());
+        CategoryDto mysteryDto = new CategoryDto()
+                .setName(mystery.getName())
                         .setDescription(mystery.getDescription());
 
         when(categoryRepository.findById(VALID_ID))

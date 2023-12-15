@@ -31,7 +31,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books from the db",
             description = "Endpoint for getting a list of all books")
     public List<BookDto> getAll(Pageable pageable) {
@@ -39,7 +39,7 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get a book by id",
             description = "Endpoint for getting a book by id from the db")
     public BookDto getBookById(@PathVariable Long id) {
@@ -47,7 +47,7 @@ public class BookController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new book",
             description = "Endpoint for saving a book to the db")
@@ -56,7 +56,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "Update a book by id",
             description = "Endpoint for updating a book in the db by id")
@@ -66,7 +66,7 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a book by id",
             description = "Endpoint for deleting a book from the db by id")
@@ -75,11 +75,12 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Find all books by params",
             description = "Endpoint for finding a list of books by params from the db")
     public ResponseEntity<List<BookDto>> getAllByParams(BookSearchParametersDto
                                                                     bookSearchParametersDto) {
+        System.out.println(bookSearchParametersDto);
         List<BookDto> bookDtoList = bookService.getBookDtosByParameters(bookSearchParametersDto);
         return !bookDtoList.isEmpty()
                 ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)

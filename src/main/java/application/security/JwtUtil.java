@@ -2,6 +2,7 @@ package application.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -33,9 +34,13 @@ public class JwtUtil {
     }
 
     public boolean isValidToken(String token) {
-        Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secret)
-                .build().parseClaimsJws(token);
-        return !claimsJws.getBody().getExpiration().before(new Date());
+        try {
+            Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secret)
+                    .build().parseClaimsJws(token);
+            return !claimsJws.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new JwtException("Expired or invalid JWT token");
+        }
     }
 
     public String extractUsername(String token) {

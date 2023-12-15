@@ -38,7 +38,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Place an order",
             description = "Endpoint for saving an order to the db")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     public OrderResponseDto placeOrder(Authentication authentication,
                                        @RequestBody @Valid OrderRequestShippingAddressDto dto) {
         User user = (User) authentication.getPrincipal();
@@ -51,7 +51,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all orders",
             description = "Endpoint for getting all orders from the db")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     public List<OrderResponseDto> getAllOrders(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return orderService.findAllByUserId(user.getId());
@@ -61,7 +61,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Update an order status",
             description = "Endpoint for updating an order status")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void updateOrderStatus(@PathVariable Long id,
                                   @RequestBody OrderRequestStatusDto dto) {
         orderService.updateOrderStatus(id, dto);
@@ -71,7 +71,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Get all orderItems by order id",
             description = "Endpoint for getting all orderItems by order id from the db")
-    @PreAuthorize("hasRole('ROLE_USER') and @belongingCheck"
+    @PreAuthorize("hasRole('USER') and @belongingCheck"
             + ".checkBelongingOrderToUser(authentication, #orderId)")
     public List<OrderItemResponseDto> getAllOrderItemsByOrderId(@PathVariable Long orderId) {
         return orderItemService.getAllOrderItemDtosByOrderId(orderId);
@@ -81,7 +81,7 @@ public class OrderController {
     @Operation(summary = "Get a specific orderItem",
             description = "Endpoint for getting a specific orderItem from the db")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_USER') and @belongingCheck"
+    @PreAuthorize("hasRole('USER') and @belongingCheck"
             + ".checkBelongingOrderToUser(authentication, #orderId)")
     public OrderItemResponseDto getSpecificOrderItem(@PathVariable Long orderId,
                                                      @PathVariable Long itemId) {

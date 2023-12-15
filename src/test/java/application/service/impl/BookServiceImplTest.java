@@ -43,6 +43,7 @@ class BookServiceImplTest {
     private static final Long VALID_CATEGORY_ID = 1L;
     private static final Integer ONE_TIME = 1;
     private static List<Book> books;
+    private static List<BookDto> bookDtos;
     @Mock
     private BookRepository bookRepository;
     @Mock
@@ -54,25 +55,51 @@ class BookServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        Book greatGatsby = new Book().setTitle("The Great Gatsby")
+        Book greatGatsby = new Book()
+                .setTitle("The Great Gatsby")
                 .setAuthor("F. Scott Fitzgerald")
                 .setIsbn("9780743273565")
                 .setPrice(BigDecimal.valueOf(11))
                 .setDescription("The story of the fabulously wealthy Jay Gatsby")
                 .setCoverImage("https://example.com/book1-cover-image.jpg");
-        Book prideAndPrejudice = new Book().setTitle("Pride and Prejudice")
+        Book prideAndPrejudice = new Book()
+                .setTitle("Pride and Prejudice")
                 .setAuthor("Jane Austen")
                 .setIsbn("9780141439518")
                 .setPrice(BigDecimal.valueOf(20))
                 .setDescription("A romantic novel")
-                .setCoverImage("https://example.com/book1-cover-image.jpg");
-        Book book1984 = new Book().setTitle("1984")
+                .setCoverImage("https://example.com/book2-cover-image.jpg");
+        Book book1984 = new Book()
+                .setTitle("1984")
                 .setAuthor("George Orwell")
                 .setIsbn("9780451524935")
                 .setPrice(BigDecimal.valueOf(15))
                 .setDescription("A dystopian social science fiction novel")
-                .setCoverImage("https://example.com/book1-cover-image.jpg");
+                .setCoverImage("https://example.com/book3-cover-image.jpg");
+        BookDto greatGatsbyDto = new BookDto()
+                .setTitle(greatGatsby.getTitle())
+                .setAuthor(greatGatsby.getAuthor())
+                .setPrice(greatGatsby.getPrice())
+                .setIsbn(greatGatsby.getIsbn())
+                .setDescription(greatGatsby.getDescription())
+                .setCoverImage(greatGatsby.getCoverImage());
+        BookDto prideAndPrejudiceDto = new BookDto()
+                .setTitle(prideAndPrejudice.getTitle())
+                .setAuthor(prideAndPrejudice.getAuthor())
+                .setPrice(prideAndPrejudice.getPrice())
+                .setIsbn(prideAndPrejudice.getIsbn())
+                .setDescription(prideAndPrejudice.getDescription())
+                .setCoverImage(prideAndPrejudice.getCoverImage());
+        BookDto book1984Dto = new BookDto()
+                .setTitle(book1984.getTitle())
+                .setAuthor(book1984.getAuthor())
+                .setPrice(book1984.getPrice())
+                .setIsbn(book1984.getIsbn())
+                .setDescription(book1984.getDescription())
+                .setCoverImage(book1984.getCoverImage());
         books = List.of(greatGatsby, prideAndPrejudice, book1984);
+        bookDtos = List.of(greatGatsbyDto, prideAndPrejudiceDto, book1984Dto);
+
     }
 
     @Test
@@ -109,38 +136,21 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify findAll() method with correct pageable
+            Verify findAll() method with correct pageable object
             """)
     void findAllBooks_ValidPageable_ReturnExpectedDtoList() {
-        BookDto greatGatsbyDto = new BookDto()
-                .setTitle(books.get(GREAT_GATSBY_ID).getTitle())
-                .setAuthor(books.get(GREAT_GATSBY_ID).getAuthor())
-                .setPrice(books.get(GREAT_GATSBY_ID).getPrice())
-                .setIsbn(books.get(GREAT_GATSBY_ID).getIsbn())
-                .setDescription(books.get(GREAT_GATSBY_ID).getDescription())
-                .setCoverImage(books.get(GREAT_GATSBY_ID).getCoverImage());
-        BookDto prideAndPrejudiceDto = new BookDto()
-                .setTitle(books.get(PRIDE_AND_PREJUDICE_ID).getTitle())
-                .setAuthor(books.get(PRIDE_AND_PREJUDICE_ID).getAuthor())
-                .setPrice(books.get(PRIDE_AND_PREJUDICE_ID).getPrice())
-                .setIsbn(books.get(PRIDE_AND_PREJUDICE_ID).getIsbn())
-                .setDescription(books.get(PRIDE_AND_PREJUDICE_ID).getDescription())
-                .setCoverImage(books.get(PRIDE_AND_PREJUDICE_ID).getCoverImage());
-        BookDto book1984Dto = new BookDto()
-                .setTitle(books.get(BOOK_1984_ID).getTitle())
-                .setAuthor(books.get(BOOK_1984_ID).getAuthor())
-                .setPrice(books.get(BOOK_1984_ID).getPrice())
-                .setIsbn(books.get(BOOK_1984_ID).getIsbn())
-                .setDescription(books.get(BOOK_1984_ID).getDescription())
-                .setCoverImage(books.get(BOOK_1984_ID).getCoverImage());
         PageImpl<Book> bookPage = new PageImpl<>(books);
         when(bookRepository.findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE)))
                 .thenReturn(bookPage);
-        when(bookMapper.toDto(books.get(GREAT_GATSBY_ID))).thenReturn(greatGatsbyDto);
-        when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID))).thenReturn(prideAndPrejudiceDto);
-        when(bookMapper.toDto(books.get(BOOK_1984_ID))).thenReturn(book1984Dto);
+        when(bookMapper.toDto(books.get(GREAT_GATSBY_ID)))
+                .thenReturn(bookDtos.get(GREAT_GATSBY_ID));
+        when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID)))
+                .thenReturn(bookDtos.get(PRIDE_AND_PREJUDICE_ID));
+        when(bookMapper.toDto(books.get(BOOK_1984_ID)))
+                .thenReturn(bookDtos.get(BOOK_1984_ID));
 
-        List<BookDto> expected = List.of(greatGatsbyDto, prideAndPrejudiceDto, book1984Dto);
+        List<BookDto> expected = List.of(bookDtos.get(GREAT_GATSBY_ID),
+                bookDtos.get(PRIDE_AND_PREJUDICE_ID), bookDtos.get(BOOK_1984_ID));
         List<BookDto> actual = bookServiceImpl
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
         assertEquals(3, actual.size());
@@ -155,22 +165,15 @@ class BookServiceImplTest {
             Verify getBookDtoById() with correct bookId
             """)
     void findBookById_ValidBookId_ReturnBookDto() {
-        BookDto prideAndPrejudiceDto = new BookDto()
-                .setTitle(books.get(PRIDE_AND_PREJUDICE_ID).getTitle())
-                .setAuthor(books.get(PRIDE_AND_PREJUDICE_ID).getAuthor())
-                .setPrice(books.get(PRIDE_AND_PREJUDICE_ID).getPrice())
-                .setIsbn(books.get(PRIDE_AND_PREJUDICE_ID).getIsbn())
-                .setDescription(books.get(PRIDE_AND_PREJUDICE_ID).getDescription())
-                .setCoverImage(books.get(PRIDE_AND_PREJUDICE_ID).getCoverImage());
-
         when(bookRepository
                 .findById(VALID_BOOK_ID))
                 .thenReturn(Optional.ofNullable(books.get(PRIDE_AND_PREJUDICE_ID)));
-        when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID))).thenReturn(prideAndPrejudiceDto);
+        when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID)))
+                .thenReturn(bookDtos.get(PRIDE_AND_PREJUDICE_ID));
 
         BookDto actual = bookServiceImpl.getBookDtoById(VALID_BOOK_ID);
         assertNotNull(actual);
-        assertEquals(prideAndPrejudiceDto, actual);
+        assertEquals(bookDtos.get(PRIDE_AND_PREJUDICE_ID), actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
         verifyNoMoreInteractions(bookRepository);
     }
@@ -180,7 +183,6 @@ class BookServiceImplTest {
             Verify getBookDtoById() with invalid bookId
             """)
     void findBookById_InvalidBookId_ReturnException() {
-
         when(bookRepository.findById(INVALID_BOOK_ID))
                 .thenReturn(Optional.empty());
 
@@ -230,28 +232,22 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify getBookDtosByParameters() method with params
+            Verify getBookDtosByParameters() method with correct params
             """)
-    void getBookByParams_ValidParams_ReturnExpectedList() {
+    void getBooksByParams_ValidParams_ReturnExpectedList() {
         BookSearchParametersDto bookSearchParametersDto
                         = new BookSearchParametersDto(new String[]{"1984"},
                                 new String[]{"George Orwell"});
-        BookDto book1984Dto
-                = new BookDto().setTitle(books.get(BOOK_1984_ID).getTitle())
-                .setAuthor(books.get(BOOK_1984_ID).getAuthor())
-                .setPrice(books.get(BOOK_1984_ID).getPrice())
-                .setIsbn(books.get(BOOK_1984_ID).getIsbn())
-                .setDescription(books.get(BOOK_1984_ID).getDescription())
-                .setCoverImage(books.get(BOOK_1984_ID).getCoverImage());
 
         when(specificationBuilder
                 .build(bookSearchParametersDto)).thenReturn(Specification.where(null));
         when(bookRepository
                 .findAll(Specification.where(null)))
                 .thenReturn(List.of(books.get(BOOK_1984_ID)));
-        when(bookMapper.toDto(books.get(BOOK_1984_ID))).thenReturn(book1984Dto);
+        when(bookMapper.toDto(books.get(BOOK_1984_ID)))
+                .thenReturn(bookDtos.get(BOOK_1984_ID));
 
-        List<BookDto> expected = List.of(book1984Dto);
+        List<BookDto> expected = List.of(bookDtos.get(BOOK_1984_ID));
         List<BookDto> actual = bookServiceImpl.getBookDtosByParameters(bookSearchParametersDto);
         assertEquals(1, actual.size());
         assertEquals(expected, actual);

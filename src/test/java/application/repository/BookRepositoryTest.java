@@ -28,24 +28,26 @@ class BookRepositoryTest {
             """)
     void findAllByCategoryId_ValidCategoryId_ReturnTwoBooks() {
         Book prideAndPrejudice = new Book()
+                .setId(2L)
                 .setTitle("Pride and Prejudice")
                 .setAuthor("Jane Austen")
                 .setIsbn("9780141439518")
                 .setPrice(BigDecimal.valueOf(20))
                 .setDescription("A romantic novel")
-                .setCoverImage("https://example.com/book1-cover-image.jpg");
+                .setCoverImage("https://example.com/book2-cover-image.jpg");
         Book book1984 = new Book()
+                .setId(3L)
                 .setTitle("1984")
                 .setAuthor("George Orwell")
                 .setIsbn("9780451524935")
-                .setPrice(BigDecimal.valueOf(15))
+                .setPrice(BigDecimal.valueOf(9))
                 .setDescription("A dystopian social science fiction novel")
-                .setCoverImage("https://example.com/book1-cover-image.jpg");
+                .setCoverImage("https://example.com/book3-cover-image.jpg");
 
         List<Book> expected = List.of(prideAndPrejudice, book1984);
         List<Book> actual = bookRepository.findAllByCategoryId(NOVEL_ID);
         assertEquals(2, actual.size());
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -64,6 +66,7 @@ class BookRepositoryTest {
             """)
     void findAllByCategoryId_ValidCategoryId_ReturnOneBook() {
         Book greatGatsby = new Book()
+                .setId(1L)
                 .setTitle("The Great Gatsby")
                 .setAuthor("F. Scott Fitzgerald")
                 .setIsbn("9780743273565")
@@ -74,6 +77,6 @@ class BookRepositoryTest {
         List<Book> expected = List.of(greatGatsby);
         List<Book> actual = bookRepository.findAllByCategoryId(FICTION_ID);
         assertEquals(1, actual.size());
-        EqualsBuilder.reflectionEquals(expected, actual, "id");
+        assertEquals(expected, actual);
     }
 }
