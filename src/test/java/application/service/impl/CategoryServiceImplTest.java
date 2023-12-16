@@ -65,7 +65,7 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Get all categories, returns not an empty list
+            Verify getAll() method
             """)
     void findAllCategories_ValidPageable_ReturnExpectedList() {
         PageImpl<Category> categoryPage = new PageImpl<>(categories);
@@ -95,9 +95,9 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify the correct categoryDto was returned by categoryId
+            Verify findCategoryById() method with correct categoryId
             """)
-    void findCategoryById_ValidCategoryId_ReturnExpectedCategory() {
+    void findCategoryById_ValidCategoryId_ReturnCategoryDto() {
         when(categoryRepository.findById(VALID_ID))
                 .thenReturn(Optional.ofNullable(categories.get(FICTION_ID)));
         when(categoryMapper.toDto(categories.get(FICTION_ID)))
@@ -115,7 +115,7 @@ class CategoryServiceImplTest {
     @DisplayName("""
             Verify throwing exception with invalid categoryId
             """)
-    void findCategoryById_InvalidCategoryId_ReturnException() {
+    void findCategoryById_InvalidCategoryId_ThrowException() {
         when(categoryRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EntityNotFoundException.class,
@@ -158,9 +158,9 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify update() method with correct params
+            Verify update() method with correct requestDto
             """)
-    void updateCategoryById_ValidParams_ReturnUpdatedCategoryDto() {
+    void updateCategory_ValidRequestDto_ReturnCategoryDto() {
         CategoryRequestDto mysteryRequestDto = new CategoryRequestDto()
                 .setName("Mystery")
                 .setDescription("Worth reading");

@@ -104,7 +104,7 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify createBook() method with correct requestDto
+            Verify save() method with correct requestDto
             """)
     void saveBook_ValidRequestDto_ReturnBookDto() {
         CreateBookRequestDto theHobbitRequestDto = new CreateBookRequestDto()
@@ -136,7 +136,7 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify findAll() method with correct pageable object
+            Verify findAll() method
             """)
     void findAllBooks_ValidPageable_ReturnExpectedDtoList() {
         PageImpl<Book> bookPage = new PageImpl<>(books);
@@ -162,7 +162,7 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify getBookDtoById() with correct bookId
+            Verify getBookDtoById() method with correct bookId
             """)
     void findBookById_ValidBookId_ReturnBookDto() {
         when(bookRepository
@@ -180,9 +180,9 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify getBookDtoById() with invalid bookId
+            Verify getBookDtoById() method with invalid bookId
             """)
-    void findBookById_InvalidBookId_ReturnException() {
+    void findBookById_InvalidBookId_ThrowException() {
         when(bookRepository.findById(INVALID_BOOK_ID))
                 .thenReturn(Optional.empty());
 
@@ -198,9 +198,9 @@ class BookServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify updateBook() method with correct bookId
+            Verify updateBook() method with correct requestDto
             """)
-    void updateBook_ValidBookId_ReturnBookDto() {
+    void updateBook_ValidRequestDto_ReturnBookDto() {
         CreateBookRequestDto animalFarmRequestDto = new CreateBookRequestDto()
                 .setTitle("Animal Farm")
                 .setAuthor("George Orwell")

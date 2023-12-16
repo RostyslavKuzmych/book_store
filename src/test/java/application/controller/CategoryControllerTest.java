@@ -168,7 +168,7 @@ class CategoryControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {ADMIN, USER})
     @DisplayName("""
-            Verify deleteCategory() with valid categoryId
+            Verify deleteCategory() method with valid categoryId
             """)
     @Sql(scripts = PATH + "save_category_fantasy_to_categories_table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
