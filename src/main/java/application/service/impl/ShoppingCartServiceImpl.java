@@ -16,6 +16,8 @@ import application.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
+
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +31,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final CartItemRepository cartItemRepository;
 
     @Override
-    public void createShoppingCart(User user) {
+    public ShoppingCartResponseDto createShoppingCart(User user) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(user);
-        shoppingCartRepository.save(shoppingCart);
+        return shoppingCartMapper
+                .toResponseDto(shoppingCartRepository.save(shoppingCart));
     }
 
     @Override
@@ -54,9 +57,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void clearShoppingCart(ShoppingCart shoppingCart) {
+    public ShoppingCartResponseDto clearShoppingCart(ShoppingCart shoppingCart) {
         shoppingCart.setCartItemSet(new HashSet<>());
-        shoppingCartRepository.save(shoppingCart);
+        return shoppingCartMapper
+                .toResponseDto(shoppingCartRepository.save(shoppingCart));
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
-    private Set<CartItem> updateCartItems(Long cartItemId, ShoppingCart shoppingCart,
+    protected Set<CartItem> updateCartItems(Long cartItemId, ShoppingCart shoppingCart,
                                           CartItem cartItem) {
         Set<CartItem> cartItemSet = new HashSet<>();
         for (CartItem c : shoppingCart.getCartItemSet()) {
@@ -86,12 +90,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return cartItemSet;
     }
 
-    private void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
+    protected void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
         shoppingCart.getCartItemSet().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
     }
 
-    private CartItem findById(Long cartItemId) {
+    protected CartItem findById(Long cartItemId) {
         return cartItemRepository.findById(cartItemId).orElseThrow(
                 () -> new EntityNotFoundException(FIND_CART_ITEM_EXCEPTION + cartItemId));
     }

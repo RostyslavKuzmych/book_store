@@ -65,7 +65,7 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Get all categories, returns not an empty list
+            Verify findAll() method
             """)
     void findAllCategories_ValidPageable_ReturnExpectedList() {
         PageImpl<Category> categoryPage = new PageImpl<>(categories);
@@ -95,7 +95,7 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify the correct categoryDto was returned by categoryId
+            Verify correct categoryDto with categoryId
             """)
     void findCategoryById_ValidCategoryId_ReturnExpectedCategory() {
         when(categoryRepository.findById(VALID_ID))

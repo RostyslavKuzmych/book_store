@@ -161,7 +161,7 @@ class BookControllerTest {
              + "remove_lord-of-the-rings_book_from_books_table.sql",
              executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("""
-            Verify updateBook() with correct bookRequestDto
+            Verify updateBook() method with correct bookRequestDto
             """)
     void updateBook_ValidRequestDto_ReturnBookDto() throws Exception {
         CreateBookRequestDto harryPotterRequest =
