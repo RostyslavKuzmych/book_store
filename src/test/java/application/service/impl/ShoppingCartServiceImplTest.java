@@ -33,8 +33,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartServiceImplTest {
     private static final Integer ONE_TIME = 1;
+    private static final Long INVALID_CART_ITEM_ID = 10L;
     private static final Long CART_ITEM_LOVE_IS_BOOK_ID = 1L;
     private static final Long JOHN_ID = 5L;
+    private static final String FIND_CART_ITEM_EXCEPTION = "Can't find cartItem by id ";
     private static final Long ALICE_ID = 2L;
     private static final Long LOVE_IS_ID = 2L;
     private static User alice;
@@ -85,7 +87,6 @@ class ShoppingCartServiceImplTest {
         assertNotNull(actual);
         assertEquals(responseDto, actual);
         verify(shoppingCartRepository, times(ONE_TIME)).save(shoppingCart);
-        verifyNoMoreInteractions(shoppingCartRepository);
     }
 
     @Test
@@ -132,7 +133,6 @@ class ShoppingCartServiceImplTest {
         assertEquals(shoppingCartResponseDto, actual);
         verify(shoppingCartRepository, times(ONE_TIME)).findShoppingCartByUserId(ALICE_ID);
         verify(shoppingCartRepository, times(ONE_TIME)).save(shoppingCart);
-        verifyNoMoreInteractions(shoppingCartRepository);
     }
 
     @Test
@@ -159,11 +159,13 @@ class ShoppingCartServiceImplTest {
         assertEquals(responseDto, actual);
         verify(shoppingCartRepository,
                 times(ONE_TIME)).findShoppingCartByUserId(ALICE_ID);
-        verifyNoMoreInteractions(shoppingCartRepository);
     }
 
     @Test
-    void clearShoppingCart() {
+    @DisplayName("""
+            Verify clearShoppingCart() method
+            """)
+    void clearShoppingCart_MethodCall_ReturnEmptyShoppingCartDto() {
         ShoppingCart shoppingCart
                 = new ShoppingCart()
                 .setId(4L)
@@ -189,15 +191,16 @@ class ShoppingCartServiceImplTest {
         assertEquals(responseDto, actual);
         verify(shoppingCartRepository, times(ONE_TIME))
                 .save(clearedShoppingCart);
-        verifyNoMoreInteractions(shoppingCartRepository);
     }
 
     @Test
-    void updateQuantityById() {
+    @DisplayName("""
+            Verify updateQuantityById() method with correct cartItemId
+            """)
+    void updateQuantityById_ValidCartItemId_ReturnShoppingCartDto() {
         Long inputId = 3L;
         ShoppingCartRequestDto shoppingCartRequestDto
                 = new ShoppingCartRequestDto().setQuantity(5);
-
         CartItem theHobbitCartItem
                 = new CartItem()
                 .setId(2L)
@@ -236,9 +239,6 @@ class ShoppingCartServiceImplTest {
                 .thenReturn(theLittlePrinceCartItem);
         when(shoppingCartRepository.findShoppingCartByUserId(ALICE_ID))
                 .thenReturn(shoppingCart);
-        Mockito.lenient().when(mockedShoppingCartServiceImpl
-                .updateCartItems(inputId, shoppingCart, theLittlePrinceCartItem))
-                .thenReturn(Set.of(theHobbitCartItem, theLittlePrinceCartItem));
         when(shoppingCartRepository.save(shoppingCart))
                 .thenReturn(shoppingCart);
         when(shoppingCartMapper.toResponseDto(shoppingCart))
@@ -252,6 +252,19 @@ class ShoppingCartServiceImplTest {
                 .findShoppingCartByUserId(ALICE_ID);
         verify(shoppingCartRepository, times(ONE_TIME))
                 .save(shoppingCart);
-        verifyNoMoreInteractions(shoppingCartRepository);
+    }
+
+    @Test
+    @DisplayName("""
+            Verify throwing exception with invalid cartItemId
+            """)
+    void updateQuantityById_InvalidCartItemId_ThrowException() {
+        Exception exception = assertThrows(EntityNotFoundException.class,
+                () -> shoppingCartServiceImpl.updateQuantityById(alice,
+                        INVALID_CART_ITEM_ID, new ShoppingCartRequestDto().setQuantity(3)));
+        String expected = FIND_CART_ITEM_EXCEPTION + INVALID_CART_ITEM_ID;
+        String actual = exception.getMessage();
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 }

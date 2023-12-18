@@ -77,7 +77,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return shoppingCartMapper.toResponseDto(shoppingCart);
     }
 
-    protected Set<CartItem> updateCartItems(Long cartItemId, ShoppingCart shoppingCart,
+    private Set<CartItem> updateCartItems(Long cartItemId, ShoppingCart shoppingCart,
                                           CartItem cartItem) {
         Set<CartItem> cartItemSet = new HashSet<>();
         for (CartItem c : shoppingCart.getCartItemSet()) {
@@ -90,12 +90,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return cartItemSet;
     }
 
-    protected void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
+    private void addCartItemToShoppingCart(ShoppingCart shoppingCart, CartItem cartItem) {
         shoppingCart.getCartItemSet().add(cartItem);
         shoppingCartRepository.save(shoppingCart);
     }
 
-    protected CartItem findById(Long cartItemId) {
+    private CartItem findById(Long cartItemId) {
         return cartItemRepository.findById(cartItemId).orElseThrow(
                 () -> new EntityNotFoundException(FIND_CART_ITEM_EXCEPTION + cartItemId));
     }

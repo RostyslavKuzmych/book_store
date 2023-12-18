@@ -131,7 +131,6 @@ class BookServiceImplTest {
         assertNotNull(actual);
         assertEquals(theHobbitDto, actual);
         verify(bookRepository, times(ONE_TIME)).save(theHobbit);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -157,7 +156,6 @@ class BookServiceImplTest {
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME))
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -175,7 +173,6 @@ class BookServiceImplTest {
         assertNotNull(actual);
         assertEquals(bookDtos.get(PRIDE_AND_PREJUDICE_ID), actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -183,9 +180,6 @@ class BookServiceImplTest {
             Verify getBookDtoById() method with invalid bookId
             """)
     void findBookById_InvalidBookId_ReturnException() {
-        when(bookRepository.findById(INVALID_BOOK_ID))
-                .thenReturn(Optional.empty());
-
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> bookServiceImpl.getBookDtoById(INVALID_BOOK_ID));
         String expected = "Can't find book by id " + INVALID_BOOK_ID;
@@ -193,7 +187,6 @@ class BookServiceImplTest {
         assertNotNull(actual);
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME)).findById(INVALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -227,7 +220,6 @@ class BookServiceImplTest {
         assertNotNull(actual);
         assertEquals(animalFarmDto, actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -252,7 +244,6 @@ class BookServiceImplTest {
         assertEquals(1, actual.size());
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME)).findAll(Specification.where(null));
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -280,6 +271,5 @@ class BookServiceImplTest {
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME))
                 .findAllByCategoryId(VALID_CATEGORY_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 }

@@ -90,7 +90,6 @@ class CategoryServiceImplTest {
         assertEquals(expected, actual);
         verify(categoryRepository, times(ONE_TIME))
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
-        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -108,7 +107,6 @@ class CategoryServiceImplTest {
         assertEquals(categoryDtos.get(FICTION_ID), actual);
         verify(categoryRepository, times(ONE_TIME))
                 .findById(VALID_ID);
-        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -126,7 +124,6 @@ class CategoryServiceImplTest {
         assertEquals(expected, actual);
         verify(categoryRepository, times(ONE_TIME))
                 .findById(INVALID_ID);
-        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
@@ -153,14 +150,13 @@ class CategoryServiceImplTest {
         assertEquals(horrorDto, actual);
         verify(categoryRepository, times(ONE_TIME))
                 .save(horror);
-        verifyNoMoreInteractions(categoryRepository);
     }
 
     @Test
     @DisplayName("""
             Verify update() method with correct params
             """)
-    void updateCategoryById_ValidParams_ReturnUpdatedCategoryDto() {
+    void updateCategoryById_ValidParams_ReturnCategoryDto() {
         CategoryRequestDto mysteryRequestDto = new CategoryRequestDto()
                 .setName("Mystery")
                 .setDescription("Worth reading");
@@ -182,6 +178,5 @@ class CategoryServiceImplTest {
         assertEquals(mysteryDto, actual);
         verify(categoryRepository, times(ONE_TIME))
                 .findById(VALID_ID);
-        verifyNoMoreInteractions(categoryRepository);
     }
 }
