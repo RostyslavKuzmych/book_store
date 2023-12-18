@@ -26,8 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Book management", description = "Endpoints for book management")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping(BookController.BASE_URL)
 public class BookController {
+    public static final String BASE_URL = "/api/books";
+    public static final String SEARCH_URL = "/search";
     private final BookService bookService;
 
     @GetMapping
@@ -74,7 +76,7 @@ public class BookController {
         bookService.deleteBookById(id);
     }
 
-    @GetMapping("/search")
+    @GetMapping(SEARCH_URL)
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Find all books by params",
             description = "Endpoint for finding a list of books by params from the db")

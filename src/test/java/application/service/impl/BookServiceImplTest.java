@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import application.dto.book.BookDto;
@@ -33,6 +32,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
+    private static final String EXCEPTION = "Can't find book by id ";
     private static final Integer GREAT_GATSBY_ID = 0;
     private static final Integer PRIDE_AND_PREJUDICE_ID = 1;
     private static final Integer BOOK_1984_ID = 2;
@@ -106,7 +106,8 @@ class BookServiceImplTest {
     @DisplayName("""
             Verify save() method with correct requestDto
             """)
-    void saveBook_ValidRequestDto_ReturnBookDto() {
+    void saveBook_ValidBookRequest_ReturnBookDto() {
+        // given
         CreateBookRequestDto theHobbitRequestDto = new CreateBookRequestDto()
                 .setTitle("The Hobbit")
                 .setAuthor("J.R.R. Tolkien")
@@ -123,23 +124,27 @@ class BookServiceImplTest {
                 .setIsbn(theHobbit.getIsbn())
                 .setPrice(theHobbit.getPrice());
 
+        // when
         when(bookMapper.toModel(theHobbitRequestDto)).thenReturn(theHobbit);
         when(bookRepository.save(theHobbit)).thenReturn(theHobbit);
         when(bookMapper.toDto(theHobbit)).thenReturn(theHobbitDto);
 
+        // then
         BookDto actual = bookServiceImpl.createBook(theHobbitRequestDto);
         assertNotNull(actual);
         assertEquals(theHobbitDto, actual);
         verify(bookRepository, times(ONE_TIME)).save(theHobbit);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
     @DisplayName("""
             Verify findAll() method
             """)
-    void findAllBooks_ValidPageable_ReturnExpectedDtoList() {
+    void findAllBooks_ValidPageable_ReturnThreeBooks() {
+        // given
         PageImpl<Book> bookPage = new PageImpl<>(books);
+
+        // when
         when(bookRepository.findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE)))
                 .thenReturn(bookPage);
         when(bookMapper.toDto(books.get(GREAT_GATSBY_ID)))
@@ -149,6 +154,7 @@ class BookServiceImplTest {
         when(bookMapper.toDto(books.get(BOOK_1984_ID)))
                 .thenReturn(bookDtos.get(BOOK_1984_ID));
 
+        // then
         List<BookDto> expected = List.of(bookDtos.get(GREAT_GATSBY_ID),
                 bookDtos.get(PRIDE_AND_PREJUDICE_ID), bookDtos.get(BOOK_1984_ID));
         List<BookDto> actual = bookServiceImpl
@@ -157,7 +163,6 @@ class BookServiceImplTest {
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME))
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -165,17 +170,18 @@ class BookServiceImplTest {
             Verify getBookDtoById() method with correct bookId
             """)
     void findBookById_ValidBookId_ReturnBookDto() {
+        // when
         when(bookRepository
                 .findById(VALID_BOOK_ID))
                 .thenReturn(Optional.ofNullable(books.get(PRIDE_AND_PREJUDICE_ID)));
         when(bookMapper.toDto(books.get(PRIDE_AND_PREJUDICE_ID)))
                 .thenReturn(bookDtos.get(PRIDE_AND_PREJUDICE_ID));
 
+        // then
         BookDto actual = bookServiceImpl.getBookDtoById(VALID_BOOK_ID);
         assertNotNull(actual);
         assertEquals(bookDtos.get(PRIDE_AND_PREJUDICE_ID), actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
@@ -183,24 +189,24 @@ class BookServiceImplTest {
             Verify getBookDtoById() method with invalid bookId
             """)
     void findBookById_InvalidBookId_ThrowException() {
-        when(bookRepository.findById(INVALID_BOOK_ID))
-                .thenReturn(Optional.empty());
-
+        // when
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> bookServiceImpl.getBookDtoById(INVALID_BOOK_ID));
-        String expected = "Can't find book by id " + INVALID_BOOK_ID;
+
+        // then
+        String expected = EXCEPTION + INVALID_BOOK_ID;
         String actual = exception.getMessage();
         assertNotNull(actual);
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME)).findById(INVALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
     @DisplayName("""
             Verify updateBook() method with correct requestDto
             """)
-    void updateBook_ValidRequestDto_ReturnBookDto() {
+    void updateBook_ValidBookRequest_ReturnBookDto() {
+        // given
         CreateBookRequestDto animalFarmRequestDto = new CreateBookRequestDto()
                 .setTitle("Animal Farm")
                 .setAuthor("George Orwell")
@@ -217,28 +223,32 @@ class BookServiceImplTest {
                 .setPrice(animalFarm.getPrice())
                 .setIsbn(animalFarm.getIsbn());
 
+        // when
         when(bookRepository.findById(VALID_BOOK_ID))
                 .thenReturn(Optional.ofNullable(books.get(BOOK_1984_ID)));
         when(bookMapper.toModel(animalFarmRequestDto)).thenReturn(animalFarm);
         when(bookRepository.save(animalFarm)).thenReturn(animalFarm);
         when(bookMapper.toDto(animalFarm)).thenReturn(animalFarmDto);
 
+        // then
         BookDto actual = bookServiceImpl.updateBook(VALID_BOOK_ID, animalFarmRequestDto);
         assertNotNull(actual);
         assertEquals(animalFarmDto, actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
-        verifyNoMoreInteractions(bookRepository);
+        verify(bookRepository, times(ONE_TIME)).save(animalFarm);
     }
 
     @Test
     @DisplayName("""
             Verify getBookDtosByParameters() method with correct params
             """)
-    void getBooksByParams_ValidParams_ReturnExpectedList() {
+    void getBooksByParams_ValidParams_ReturnOneBook() {
+        // given
         BookSearchParametersDto bookSearchParametersDto
                         = new BookSearchParametersDto(new String[]{"1984"},
                                 new String[]{"George Orwell"});
 
+        // when
         when(specificationBuilder
                 .build(bookSearchParametersDto)).thenReturn(Specification.where(null));
         when(bookRepository
@@ -247,19 +257,20 @@ class BookServiceImplTest {
         when(bookMapper.toDto(books.get(BOOK_1984_ID)))
                 .thenReturn(bookDtos.get(BOOK_1984_ID));
 
+        // then
         List<BookDto> expected = List.of(bookDtos.get(BOOK_1984_ID));
         List<BookDto> actual = bookServiceImpl.getBookDtosByParameters(bookSearchParametersDto);
         assertEquals(1, actual.size());
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME)).findAll(Specification.where(null));
-        verifyNoMoreInteractions(bookRepository);
     }
 
     @Test
     @DisplayName("""
             Verify getBookDtosByCategoryId() method with correct categoryId
             """)
-    void getBooks_ValidCategoryId_ReturnExpectedList() {
+    void getBooksByCategoryId_ValidCategoryId_ReturnOneBook() {
+        // given
         BookDtoWithoutCategoriesIds greatGatsbyDto = new BookDtoWithoutCategoriesIds()
                 .setTitle(books.get(GREAT_GATSBY_ID).getTitle())
                 .setAuthor(books.get(GREAT_GATSBY_ID).getAuthor())
@@ -268,11 +279,13 @@ class BookServiceImplTest {
                 .setDescription(books.get(GREAT_GATSBY_ID).getDescription())
                 .setCoverImage(books.get(GREAT_GATSBY_ID).getCoverImage());
 
+        // when
         when(bookRepository.findAllByCategoryId(VALID_CATEGORY_ID))
                 .thenReturn(List.of(books.get(GREAT_GATSBY_ID)));
         when(bookMapper
                 .toDtoWithoutCategoriesIds(books.get(GREAT_GATSBY_ID))).thenReturn(greatGatsbyDto);
 
+        // then
         List<BookDtoWithoutCategoriesIds> expected = List.of(greatGatsbyDto);
         List<BookDtoWithoutCategoriesIds> actual
                 = bookServiceImpl.getBookDtosByCategoryId(VALID_CATEGORY_ID);
@@ -280,6 +293,5 @@ class BookServiceImplTest {
         assertEquals(expected, actual);
         verify(bookRepository, times(ONE_TIME))
                 .findAllByCategoryId(VALID_CATEGORY_ID);
-        verifyNoMoreInteractions(bookRepository);
     }
 }

@@ -15,6 +15,7 @@ import application.dto.book.CreateBookRequestDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,15 +35,14 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
     protected static MockMvc mockMvc;
+    private static final String API = BookController.BASE_URL;
+    private static final String SEARCH = BookController.SEARCH_URL;
     private static final String NIGHT_CIRCUS_ID = "/10";
     private static final Long NIGHT_CIRCUS_ID_INTO_DB = 10L;
     private static final String GREAT_GATSBY_ID = "/1";
     private static final Long FICTION_ID = 1L;
     private static final Long NOVEL_ID = 2L;
-    private static final String API = "/api/books";
     private static final String ID = "id";
-    private static final String ADMIN = "ADMIN";
-    private static final String USER = "USER";
     private static final String PATH = "classpath:database/books/";
     private static final Integer GREAT_GATSBY_DTO_ID = 0;
     private static final String HARRY_POTTER_ID = "/8";
@@ -87,13 +87,14 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = ADMIN)
+    @WithMockUser(username = "admin", roles = ControllerTestUtil.ADMIN)
     @DisplayName("""
             Verify createBook() method with correct requestDto
             """)
     @Sql(scripts = PATH + "remove_tom-book_from_books_table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void createBook_ValidRequestDto_ReturnBookDto() throws Exception {
+    void createBook_ValidBookRequest_ReturnBookDto() throws Exception {
+        // given
         CreateBookRequestDto tomRequestDto = new CreateBookRequestDto()
                 .setTitle("Cat Tom")
                 .setAuthor("Cute story about Tom the cat")
@@ -101,12 +102,14 @@ class BookControllerTest {
                 .setIsbn("9780451524230");
         String jsonRequest = objectMapper.writeValueAsString(tomRequestDto);
 
+        // when
         MvcResult mvcResult = mockMvc.perform(post(API)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
 
+        // then
         BookDto expected = new BookDto()
                 .setTitle(tomRequestDto.getTitle())
                 .setAuthor(tomRequestDto.getAuthor())
@@ -120,14 +123,16 @@ class BookControllerTest {
         EqualsBuilder.reflectionEquals(expected, actual, ID);
     }
 
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     @Test
     @DisplayName("""
             Verify getAll() method
             """)
     void getAllBooks_NonEmptyDb_ReturnThreeBooks() throws Exception {
+        // when
         MvcResult mvcResult = mockMvc.perform(get(API)).andReturn();
 
+        // then
         List<BookDto> expected = dtoList;
         List<BookDto> actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 new TypeReference<List<BookDto>>() {});
@@ -135,15 +140,17 @@ class BookControllerTest {
         assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     @Test
     @DisplayName("""
             Verify getBookById() method with correct bookId
             """)
     void getBookById_ValidBookId_ReturnBookDto() throws Exception {
+        // when
         MvcResult mvcResult = mockMvc.perform(get(API + GREAT_GATSBY_ID))
                 .andReturn();
 
+        // then
         BookDto expected = dtoList.get(GREAT_GATSBY_DTO_ID);
         BookDto actual =
                 objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
@@ -152,7 +159,7 @@ class BookControllerTest {
         assertEquals(expected, actual);
     }
 
-    @WithMockUser(username = "admin", roles = ADMIN)
+    @WithMockUser(username = "admin", roles = ControllerTestUtil.ADMIN)
     @Test
     @Sql(scripts = PATH
             + "save_the_night_circus_book_to_books_table.sql",
@@ -163,7 +170,8 @@ class BookControllerTest {
     @DisplayName("""
             Verify updateBook() method with correct bookRequestDto
             """)
-    void updateBook_ValidRequestDto_ReturnBookDto() throws Exception {
+    void updateBook_ValidBookRequest_ReturnBookDto() throws Exception {
+        // given
         CreateBookRequestDto harryPotterRequest =
                 new CreateBookRequestDto().setAuthor("J.R.R. Tolkien")
                         .setTitle("The Lord of the Rings")
@@ -171,26 +179,30 @@ class BookControllerTest {
                         .setPrice(BigDecimal.valueOf(25));
         String jsonRequest = objectMapper.writeValueAsString(harryPotterRequest);
 
+        // when
         MvcResult mvcResult = mockMvc.perform(put(API + NIGHT_CIRCUS_ID)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted())
                 .andReturn();
 
+        // then
         BookDto expected = new BookDto()
                 .setId(NIGHT_CIRCUS_ID_INTO_DB)
                 .setAuthor(harryPotterRequest.getAuthor())
                 .setTitle(harryPotterRequest.getTitle())
                 .setIsbn(harryPotterRequest.getIsbn())
-                .setPrice(harryPotterRequest.getPrice());
+                .setPrice(harryPotterRequest.getPrice())
+                .setCategoriesIds(new HashSet<>());
         BookDto actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 BookDto.class);
         assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expected, actual, "categoriesIds");
+        assertEquals(expected, actual);
     }
 
     @Test
-    @WithMockUser(username = "user", roles = {ADMIN, USER})
+    @WithMockUser(username = "user",
+            roles = {ControllerTestUtil.ADMIN, ControllerTestUtil.USER})
     @DisplayName("""
             Verify deleteBookById() method with correct bookId
             """)
@@ -198,11 +210,13 @@ class BookControllerTest {
             + "save_harry-potter_book_to_books_table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteBookById_ValidBookId_Success() throws Exception {
+        // when
         mockMvc.perform(delete(API + HARRY_POTTER_ID))
                 .andExpect(status().isNoContent());
         MvcResult mvcResult = mockMvc.perform(get(API))
                 .andReturn();
 
+        // then
         List<BookDto> expected = dtoList;
         List<BookDto> actual =
                 objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
@@ -212,7 +226,7 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     @DisplayName("""
             Verify getAllByParams() method with correct params
             """)
@@ -221,7 +235,7 @@ class BookControllerTest {
                 = new BookSearchParametersDto(new String[]{"F. Scott Fitzgerald"},
                         new String[]{"The Great Gatsby"});
 
-        MvcResult mvcResult = mockMvc.perform(get(API + "/search")
+        MvcResult mvcResult = mockMvc.perform(get(API + SEARCH)
                         .param("authors", String.join(",", parametersDto.authors()))
                         .param("titles", String.join(",", parametersDto.titles())))
                 .andReturn();
