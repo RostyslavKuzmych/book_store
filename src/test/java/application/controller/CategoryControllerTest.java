@@ -34,7 +34,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 class CategoryControllerTest {
     protected static MockMvc mockMvc;
     private static final String CLASSICS_ID = "/3";
-    private static final String BOOKS = CategoryController.BOOKS;
+    private static final String BOOKS = "/books";
     private static final String ADVENTURE_DESCRIPTION
             = "Thrilling journeys and exciting escapades into the unknown.";
     private static final Integer CLASSICS_ID_INT0_LIST = 2;
@@ -43,7 +43,7 @@ class CategoryControllerTest {
     private static final String HORROR_ID = "/6";
     private static final String FANTASY_ID = "/7";
     private static final String ID = "id";
-    private static final String API = CategoryController.BASE_URL;
+    private static final String API = "/api/categories";
     private static final String PATH = "classpath:database/categories/";
     private static final String FICTION_DESCRIPTION = "Genre encompassing all types of works "
             + "created based on imagination or invention";

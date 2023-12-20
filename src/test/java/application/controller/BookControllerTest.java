@@ -35,8 +35,8 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
     protected static MockMvc mockMvc;
-    private static final String API = BookController.BASE_URL;
-    private static final String SEARCH = BookController.SEARCH_URL;
+    private static final String API = "/api/books";
+    private static final String SEARCH = "/search";
     private static final String NIGHT_CIRCUS_ID = "/10";
     private static final Long NIGHT_CIRCUS_ID_INTO_DB = 10L;
     private static final String GREAT_GATSBY_ID = "/1";

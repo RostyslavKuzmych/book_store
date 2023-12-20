@@ -26,10 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Tag(name = "Category management", description = "Endpoints for category management")
 @RequiredArgsConstructor
-@RequestMapping(CategoryController.BASE_URL)
+@RequestMapping("/api/categories")
 public class CategoryController {
-    public static final String BASE_URL = "/api/categories";
-    public static final String BOOKS = "/books";
     private final CategoryService categoryService;
     private final BookService bookService;
 
@@ -79,7 +77,7 @@ public class CategoryController {
         categoryService.deleteById(id);
     }
 
-    @GetMapping("/{id}" + BOOKS)
+    @GetMapping("/{id}/books")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Get all books by category id",
             description = "Endpoint for getting all books by category id from the db")
