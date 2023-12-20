@@ -1,5 +1,11 @@
 package application.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import application.dto.book.BookDto;
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.cart.item.CartItemResponseDto;
@@ -11,7 +17,8 @@ import application.model.ShoppingCart;
 import application.model.User;
 import application.repository.CartItemRepository;
 import application.service.BookService;
-import jakarta.inject.Named;
+import java.math.BigDecimal;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,16 +26,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class CartItemServiceImplTest {
     private static final Long CART_ITEM_LOVE_IS_BOOK_ID = 2L;
     private static final Integer ONE_TIME = 1;
+    private static final String BOOK_1984 = "1984";
     @Mock
     private CartItemRepository cartItemRepository;
     @Mock
@@ -45,6 +47,7 @@ class CartItemServiceImplTest {
             Verify findById() method with correct cartItemId
             """)
     void findById_ValidCartItemId_ReturnCartItemDto() {
+        // given
         CartItem cartItem
                 = new CartItem()
                 .setId(CART_ITEM_LOVE_IS_BOOK_ID)
@@ -53,31 +56,35 @@ class CartItemServiceImplTest {
                 .setQuantity(5);
         CartItemResponseDto cartItemResponseDto
                 = new CartItemResponseDto()
-                .setId(CART_ITEM_LOVE_IS_BOOK_ID)
+                .setId(cartItem.getId())
                 .setBookId(cartItem.getBook().getId())
                 .setQuantity(cartItem.getQuantity())
                 .setBookTitle(cartItem.getBook().getTitle());
 
+        // when
         when(cartItemRepository.findById(CART_ITEM_LOVE_IS_BOOK_ID))
                 .thenReturn(Optional.ofNullable(cartItem));
         when(cartItemMapper.toCartItemResponseDto(cartItem))
                 .thenReturn(cartItemResponseDto);
 
+        // then
         CartItemResponseDto actual
                 = cartItemServiceImpl.findById(CART_ITEM_LOVE_IS_BOOK_ID);
         assertNotNull(actual);
         assertEquals(cartItemResponseDto, actual);
         verify(cartItemRepository, times(ONE_TIME)).findById(CART_ITEM_LOVE_IS_BOOK_ID);
     }
+
     @Test
     @DisplayName("""
             Verify createCartItem() with correct requestDto
             """)
-    void createCartItem_ValidRequestDto_ReturnCartItemDto() {
+    void createCartItem_ValidCartItemRequest_ReturnCartItemDto() {
+        // given
         Book book1984
                 = new Book()
                 .setId(3L)
-                .setTitle("1984")
+                .setTitle(BOOK_1984)
                 .setPrice(BigDecimal.valueOf(16));
         BookDto book1984Dto
                 = new BookDto()
@@ -100,20 +107,20 @@ class CartItemServiceImplTest {
         CartItemResponseDto cartItemResponseDto
                 = new CartItemResponseDto()
                 .setId(cartItem.getId())
-                .setBookTitle("1984")
+                .setBookTitle(book1984.getTitle())
                 .setBookId(cartItem.getBook().getId())
                 .setQuantity(cartItem.getQuantity());
 
+        // when
         when(cartItemMapper.toCartItem(cartItemRequestDto)).thenReturn(cartItem);
         when(bookService.getBookDtoById(cartItem.getBook().getId()))
                 .thenReturn(book1984Dto);
         when(bookMapper.toModelFromDto(book1984Dto))
                 .thenReturn(book1984);
-        cartItem.setBook(book1984);
-        cartItem.setShoppingCart(shoppingCart);
         when(cartItemRepository.save(cartItem)).thenReturn(cartItem);
         when(cartItemMapper.toCartItemResponseDto(cartItem)).thenReturn(cartItemResponseDto);
 
+        // then
         CartItemResponseDto actual
                 = cartItemServiceImpl.createCartItem(shoppingCart, cartItemRequestDto);
         assertNotNull(actual);

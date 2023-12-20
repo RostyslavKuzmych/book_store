@@ -1,10 +1,25 @@
 package application.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import application.dto.item.OrderItemResponseDto;
 import application.mapper.OrderItemMapper;
-import application.model.*;
+import application.model.Book;
+import application.model.Order;
+import application.model.OrderItem;
+import application.model.Status;
+import application.model.User;
 import application.repository.OrderItemRepository;
 import application.repository.OrderRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,15 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderItemServiceImplTest {
@@ -52,15 +58,16 @@ class OrderItemServiceImplTest {
                 .setId(1L)
                 .setOrder(order)
                 .setQuantity(5)
-                .setBook(new Book().setId(2L))
-                .setPrice(BigDecimal.valueOf(105));
+                .setBook(new Book().setId(2L).setPrice(BigDecimal.valueOf(20)))
+                .setPrice(BigDecimal.valueOf(100));
         smallOrderItem
                 = new OrderItem()
                 .setId(2L)
-                .setQuantity(2)
                 .setOrder(order)
-                .setBook(new Book().setId(3L))
+                .setQuantity(2)
+                .setBook(new Book().setId(3L).setPrice(BigDecimal.valueOf(15)))
                 .setPrice(BigDecimal.valueOf(30));
+        order.setItemSet(Set.of(bigOrderItem, smallOrderItem));
         bigOrderItemDto = new OrderItemResponseDto()
                 .setId(bigOrderItem.getId())
                 .setBookId(bigOrderItem.getBook().getId())
@@ -76,6 +83,7 @@ class OrderItemServiceImplTest {
             Verify getAllOrderItemDtosByOrderId() method with correct orderId
             """)
     void getAllOrderItemDtosByOrderId_ValidOrderId_ReturnTwoOrderItemDtos() {
+        // when
         when(orderItemRepository.findAllByOrderId(order.getId()))
                 .thenReturn(List.of(bigOrderItem, smallOrderItem));
         when(orderItemMapper.toOrderItemResponseDto(bigOrderItem))
@@ -83,6 +91,7 @@ class OrderItemServiceImplTest {
         when(orderItemMapper.toOrderItemResponseDto(smallOrderItem))
                 .thenReturn(smallOrderItemDto);
 
+        // then
         List<OrderItemResponseDto> expected = List.of(bigOrderItemDto, smallOrderItemDto);
         List<OrderItemResponseDto> actual
                 = orderItemServiceImpl.getAllOrderItemDtosByOrderId(order.getId());
@@ -96,13 +105,13 @@ class OrderItemServiceImplTest {
             Verify getOrderItemResponseById() method with correct orderItemId
             """)
     void getOrderItemResponseById_ValidOrderItemId_ReturnOrderItemDto() {
-        order.setItemSet(Set.of(bigOrderItem, smallOrderItem));
-
+        // when
         when(orderRepository.findById(order.getId()))
                 .thenReturn(Optional.of(order));
         when(orderItemMapper.toOrderItemResponseDto(smallOrderItem))
                 .thenReturn(smallOrderItemDto);
 
+        // then
         OrderItemResponseDto actual
                 = orderItemServiceImpl
                 .getOrderItemResponseById(order.getId(), smallOrderItem.getId());
@@ -115,10 +124,12 @@ class OrderItemServiceImplTest {
             Verify save() method with orderItem
             """)
     void save_ValidOrderItem_ReturnOrderItemDto() {
+        // when
         when(orderItemRepository.save(bigOrderItem)).thenReturn(bigOrderItem);
         when(orderItemMapper.toOrderItemResponseDto(bigOrderItem))
                 .thenReturn(bigOrderItemDto);
 
+        // then
         OrderItemResponseDto actual
                 = orderItemServiceImpl.save(bigOrderItem);
         assertNotNull(actual);

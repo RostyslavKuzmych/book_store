@@ -80,7 +80,6 @@ public class BookController {
             description = "Endpoint for finding a list of books by params from the db")
     public ResponseEntity<List<BookDto>> getAllByParams(BookSearchParametersDto
                                                                     bookSearchParametersDto) {
-        System.out.println(bookSearchParametersDto);
         List<BookDto> bookDtoList = bookService.getBookDtosByParameters(bookSearchParametersDto);
         return !bookDtoList.isEmpty()
                 ? new ResponseEntity<>(bookDtoList, HttpStatus.ACCEPTED)

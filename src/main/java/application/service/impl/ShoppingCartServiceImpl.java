@@ -16,8 +16,6 @@ import application.service.ShoppingCartService;
 import jakarta.transaction.Transactional;
 import java.util.HashSet;
 import java.util.Set;
-
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartResponseDto addBookToShoppingCart(User user,
                                                          CartItemRequestDto cartItemRequestDto) {
-        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
+        ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartByUserId(user.getId());
         CartItemResponseDto responseDto
                 = cartItemService.createCartItem(shoppingCart, cartItemRequestDto);
         CartItem cartItem = findById(responseDto.getId());
@@ -53,7 +51,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartResponseDto getShoppingCartDto(Long userId) {
         return shoppingCartMapper
-                .toResponseDto(shoppingCartRepository.findShoppingCartByUserId(userId));
+                .toResponseDto(shoppingCartRepository.getShoppingCartByUserId(userId));
     }
 
     @Override
@@ -71,7 +69,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = findById(cartItemId);
         cartItem.setQuantity(requestDto.getQuantity());
         cartItemService.save(cartItem);
-        ShoppingCart shoppingCart = shoppingCartRepository.findShoppingCartByUserId(user.getId());
+        ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartByUserId(user.getId());
         shoppingCart.setCartItemSet(updateCartItems(cartItemId, shoppingCart, cartItem));
         shoppingCartRepository.save(shoppingCart);
         return shoppingCartMapper.toResponseDto(shoppingCart);

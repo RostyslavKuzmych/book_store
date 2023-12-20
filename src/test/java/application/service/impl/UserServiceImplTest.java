@@ -1,7 +1,13 @@
 package application.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import application.dto.shopping.cart.ShoppingCartResponseDto;
-import application.dto.user.UserLoginRequestDto;
 import application.dto.user.UserRegistrationRequestDto;
 import application.dto.user.UserResponseDto;
 import application.exception.RegistrationException;
@@ -9,7 +15,7 @@ import application.mapper.UserMapper;
 import application.model.User;
 import application.repository.UserRepository;
 import application.service.ShoppingCartService;
-import jakarta.inject.Named;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,14 +24,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private static final Integer ONE_TIME = 1;
+    private static final String ENCODED_PASSWORD
+            = "$2a$10$nA2TJNchONFwvYeKf7kALuwncLTIoFuywvK4YMa21IrRL.pcB/645";
     private static final String EXCEPTION = "You are already registered!";
     @Mock
     private UserMapper userMapper;
@@ -43,9 +46,10 @@ class UserServiceImplTest {
             Verify register() method with nonRegisteredUser
             """)
     void register_NonRegisteredUser_ReturnUserResponseDto() {
+        // given
         UserRegistrationRequestDto clarkRequestDto
                 = new UserRegistrationRequestDto()
-                .setEmail("clark@gmail.com")
+                .setEmail("clark@example.com")
                 .setPassword("clark123")
                 .setFirstName("clark")
                 .setLastName("johnson")
@@ -64,18 +68,23 @@ class UserServiceImplTest {
                 .setFirstName(clark.getFirstName())
                 .setLastName(clark.getLastName())
                 .setShippingAddress(clark.getShippingAddress());
+        ShoppingCartResponseDto shoppingCartResponseDto
+                = new ShoppingCartResponseDto()
+                .setId(2L)
+                .setUserId(clark.getId());
 
+        // when
         when(userRepository.findUserByEmail(clarkRequestDto.getEmail()))
                 .thenReturn(Optional.empty());
         when(userMapper.toModel(clarkRequestDto)).thenReturn(clark);
         when(passwordEncoder.encode(clarkRequestDto.getPassword()))
-                .thenReturn("$2a$10$nA2TJNchONFwvYeKf7kALuwncLTIoFuywvK4YMa21IrRL.pcB/645");
-        clark.setPassword("$2a$10$nA2TJNchONFwvYeKf7kALuwncLTIoFuywvK4YMa21IrRL.pcB/645");
+                .thenReturn(ENCODED_PASSWORD);
         when(userRepository.save(clark)).thenReturn(clark);
         when(shoppingCartService.createShoppingCart(clark))
-                .thenReturn(new ShoppingCartResponseDto().setId(2L).setUserId(clark.getId()));
+                .thenReturn(shoppingCartResponseDto);
         when(userMapper.toDto(clark)).thenReturn(clarkResponseDto);
 
+        // then
         UserResponseDto actual
                 = userServiceImpl.register(clarkRequestDto);
         assertNotNull(actual);
@@ -89,22 +98,25 @@ class UserServiceImplTest {
             Verify register() method with registeredUser
             """)
     void register_RegisteredUser_ThrowException() {
+        // given
         UserRegistrationRequestDto aliceRequestDto
                 = new UserRegistrationRequestDto()
-                .setEmail("alice@gmail.com")
+                .setEmail("alice@example.com")
                 .setPassword("alice123")
                 .setRepeatPassword("alice123")
                 .setFirstName("alice")
                 .setLastName("noy")
                 .setShippingAddress("Franko 12");
 
+        // when
         when(userRepository.findUserByEmail(aliceRequestDto.getEmail()))
                 .thenReturn(Optional.ofNullable(
-                        new User().setId(2L).setEmail("alice@gmail.com")));
+                        new User().setId(2L).setEmail(aliceRequestDto.getEmail())));
 
+        // then
         Exception exception
                 = assertThrows(RegistrationException.class,
-                () -> userServiceImpl.register(aliceRequestDto));
+                    () -> userServiceImpl.register(aliceRequestDto));
         String actual = exception.getMessage();
         assertNotNull(actual);
         assertEquals(EXCEPTION, actual);

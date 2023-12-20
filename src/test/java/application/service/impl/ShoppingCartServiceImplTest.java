@@ -1,5 +1,13 @@
 package application.service.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import application.dto.cart.item.CartItemRequestDto;
 import application.dto.cart.item.CartItemResponseDto;
 import application.dto.shopping.cart.ShoppingCartRequestDto;
@@ -13,6 +21,8 @@ import application.model.User;
 import application.repository.CartItemRepository;
 import application.repository.ShoppingCartRepository;
 import application.service.CartItemService;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,19 +30,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartServiceImplTest {
     private static final Integer ONE_TIME = 1;
+    private static final Long INPUT_ID = 3L;
     private static final Long INVALID_CART_ITEM_ID = 10L;
     private static final Long CART_ITEM_LOVE_IS_BOOK_ID = 1L;
     private static final Long JOHN_ID = 5L;
@@ -68,25 +71,30 @@ class ShoppingCartServiceImplTest {
             Verify createShoppingCart() method with valid user object
             """)
     void createShoppingCart_ValidUser_ReturnShoppingCartDto() {
+        // given
         User john = new User()
                 .setId(JOHN_ID)
                 .setEmail("john@gmail.com")
                 .setPassword("johnson")
                 .setFirstName("john")
                 .setLastName("johnson");
-        ShoppingCart shoppingCart = new ShoppingCart().setUser(john);
+        ShoppingCart shoppingCart = new ShoppingCart()
+                .setId(3L)
+                .setUser(john);
         ShoppingCartResponseDto responseDto =
                 new ShoppingCartResponseDto()
-                        .setId(3L)
-                        .setUserId(JOHN_ID);
+                        .setId(shoppingCart.getId())
+                        .setUserId(shoppingCart.getUser().getId());
 
-        when(shoppingCartRepository.save(shoppingCart)).thenReturn(shoppingCart);
+        // when
+        when(shoppingCartRepository.save(any(ShoppingCart.class))).thenReturn(shoppingCart);
         when(shoppingCartMapper.toResponseDto(shoppingCart)).thenReturn(responseDto);
 
+        // then
         ShoppingCartResponseDto actual = shoppingCartServiceImpl.createShoppingCart(john);
         assertNotNull(actual);
         assertEquals(responseDto, actual);
-        verify(shoppingCartRepository, times(ONE_TIME)).save(shoppingCart);
+        verify(shoppingCartRepository, times(ONE_TIME)).save(any(ShoppingCart.class));
     }
 
     @Test
@@ -94,44 +102,49 @@ class ShoppingCartServiceImplTest {
             Verify addBookToShoppingCart() method with valid inputs
             """)
     void addBookToShoppingCart_ValidInputs_ReturnShoppingCartDto() {
-        CartItemRequestDto requestDto
-                = new CartItemRequestDto().setQuantity(5)
-                .setBookId(LOVE_IS_ID);
+        // given
         ShoppingCart shoppingCart
-                = new ShoppingCart().setUser(alice)
-                .setId(2L);
-        CartItemResponseDto cartItemResponseDto
-                = new CartItemResponseDto()
-                .setId(CART_ITEM_LOVE_IS_BOOK_ID)
-                .setQuantity(requestDto.getQuantity())
-                .setBookId(LOVE_IS_ID)
-                .setBookTitle("Love is...");
+                = new ShoppingCart()
+                .setId(2L)
+                .setUser(alice);
+        CartItemRequestDto requestDto
+                = new CartItemRequestDto()
+                .setQuantity(5)
+                .setBookId(LOVE_IS_ID);
         CartItem cartItem
                 = new CartItem()
                 .setId(CART_ITEM_LOVE_IS_BOOK_ID)
-                .setBook(new Book().setId(LOVE_IS_ID))
+                .setBook(new Book().setId(requestDto.getBookId()))
                 .setQuantity(requestDto.getQuantity())
                 .setShoppingCart(shoppingCart);
+        CartItemResponseDto cartItemResponseDto
+                = new CartItemResponseDto()
+                .setId(cartItem.getId())
+                .setQuantity(cartItem.getQuantity())
+                .setBookId(cartItem.getBook().getId())
+                .setBookTitle("Love is...");
         ShoppingCartResponseDto shoppingCartResponseDto
-                = new ShoppingCartResponseDto().setId(2L)
-                        .setUserId(ALICE_ID)
+                = new ShoppingCartResponseDto()
+                .setId(shoppingCart.getId())
+                .setUserId(shoppingCart.getUser().getId())
                 .setCartItems(Set.of(cartItemResponseDto));
 
-        when(shoppingCartRepository.findShoppingCartByUserId(ALICE_ID))
+        // when
+        when(shoppingCartRepository.getShoppingCartByUserId(ALICE_ID))
                 .thenReturn(shoppingCart);
         when(cartItemService.createCartItem(shoppingCart, requestDto))
                 .thenReturn(cartItemResponseDto);
-        when(cartItemRepository.findById(CART_ITEM_LOVE_IS_BOOK_ID))
+        when(cartItemRepository.findById(cartItemResponseDto.getId()))
                 .thenReturn(Optional.ofNullable(cartItem));
-        shoppingCart.getCartItemSet().add(cartItem);
         when(shoppingCartRepository.save(shoppingCart)).thenReturn(shoppingCart);
         when(shoppingCartMapper.toResponseDto(shoppingCart)).thenReturn(shoppingCartResponseDto);
 
+        // then
         ShoppingCartResponseDto actual
                 = shoppingCartServiceImpl.addBookToShoppingCart(alice, requestDto);
         assertNotNull(actual);
         assertEquals(shoppingCartResponseDto, actual);
-        verify(shoppingCartRepository, times(ONE_TIME)).findShoppingCartByUserId(ALICE_ID);
+        verify(shoppingCartRepository, times(ONE_TIME)).getShoppingCartByUserId(ALICE_ID);
         verify(shoppingCartRepository, times(ONE_TIME)).save(shoppingCart);
     }
 
@@ -140,6 +153,7 @@ class ShoppingCartServiceImplTest {
             Verify getShoppingCartDto() method with correct userId
             """)
     void getShoppingCartDto_ValidUserId_ReturnShoppingCartDto() {
+        // given
         ShoppingCart shoppingCart
                 = new ShoppingCart()
                 .setId(5L)
@@ -147,18 +161,20 @@ class ShoppingCartServiceImplTest {
         ShoppingCartResponseDto responseDto
                 = new ShoppingCartResponseDto()
                 .setId(shoppingCart.getId())
-                .setUserId(ALICE_ID);
+                .setUserId(shoppingCart.getUser().getId());
 
-        when(shoppingCartRepository.findShoppingCartByUserId(ALICE_ID))
+        // when
+        when(shoppingCartRepository.getShoppingCartByUserId(ALICE_ID))
                 .thenReturn(shoppingCart);
         when(shoppingCartMapper.toResponseDto(shoppingCart))
                 .thenReturn(responseDto);
 
+        // then
         ShoppingCartResponseDto actual = shoppingCartServiceImpl.getShoppingCartDto(ALICE_ID);
         assertNotNull(actual);
         assertEquals(responseDto, actual);
         verify(shoppingCartRepository,
-                times(ONE_TIME)).findShoppingCartByUserId(ALICE_ID);
+                times(ONE_TIME)).getShoppingCartByUserId(ALICE_ID);
     }
 
     @Test
@@ -166,6 +182,7 @@ class ShoppingCartServiceImplTest {
             Verify clearShoppingCart() method
             """)
     void clearShoppingCart_MethodCall_ReturnEmptyShoppingCartDto() {
+        // given
         ShoppingCart shoppingCart
                 = new ShoppingCart()
                 .setId(4L)
@@ -174,21 +191,23 @@ class ShoppingCartServiceImplTest {
         ShoppingCart clearedShoppingCart
                 = new ShoppingCart()
                 .setId(shoppingCart.getId())
-                .setUser(alice);
-        ShoppingCartResponseDto responseDto
+                .setUser(shoppingCart.getUser());
+        ShoppingCartResponseDto shoppingCartResponseDto
                 = new ShoppingCartResponseDto()
                 .setId(shoppingCart.getId())
-                .setUserId(ALICE_ID);
+                .setUserId(shoppingCart.getUser().getId());
 
+        // when
         when(shoppingCartRepository.save(clearedShoppingCart))
                 .thenReturn(clearedShoppingCart);
         when(shoppingCartMapper.toResponseDto(clearedShoppingCart))
-                .thenReturn(responseDto);
+                .thenReturn(shoppingCartResponseDto);
 
+        // then
         ShoppingCartResponseDto actual
                 = shoppingCartServiceImpl.clearShoppingCart(shoppingCart);
         assertNotNull(actual);
-        assertEquals(responseDto, actual);
+        assertEquals(shoppingCartResponseDto, actual);
         verify(shoppingCartRepository, times(ONE_TIME))
                 .save(clearedShoppingCart);
     }
@@ -198,7 +217,7 @@ class ShoppingCartServiceImplTest {
             Verify updateQuantityById() method with correct cartItemId
             """)
     void updateQuantityById_ValidCartItemId_ReturnShoppingCartDto() {
-        Long inputId = 3L;
+        // given
         ShoppingCartRequestDto shoppingCartRequestDto
                 = new ShoppingCartRequestDto().setQuantity(5);
         CartItem theHobbitCartItem
@@ -226,30 +245,32 @@ class ShoppingCartServiceImplTest {
                 .setId(4L)
                 .setUser(alice)
                 .setCartItemSet(Set.of(theHobbitCartItem, theLittlePrinceCartItem));
-        ShoppingCartResponseDto responseDto
+        ShoppingCartResponseDto shoppingCartResponseDto
                 = new ShoppingCartResponseDto()
                 .setId(shoppingCart.getId())
-                .setUserId(ALICE_ID)
+                .setUserId(shoppingCart.getUser().getId())
                 .setCartItems(Set.of(theHobbitCartItemDto, theLittlePrinceCartItemDto));
 
-        when(cartItemRepository.findById(inputId))
+        // when
+        when(cartItemRepository.findById(INPUT_ID))
                 .thenReturn(Optional.ofNullable(theLittlePrinceCartItem));
-        theLittlePrinceCartItem.setQuantity(shoppingCartRequestDto.getQuantity());
         Mockito.lenient().when(cartItemRepository.save(theLittlePrinceCartItem))
                 .thenReturn(theLittlePrinceCartItem);
-        when(shoppingCartRepository.findShoppingCartByUserId(ALICE_ID))
+        when(shoppingCartRepository.getShoppingCartByUserId(ALICE_ID))
                 .thenReturn(shoppingCart);
         when(shoppingCartRepository.save(shoppingCart))
                 .thenReturn(shoppingCart);
         when(shoppingCartMapper.toResponseDto(shoppingCart))
-                .thenReturn(responseDto);
+                .thenReturn(shoppingCartResponseDto);
 
+        // then
         ShoppingCartResponseDto actual
-                = shoppingCartServiceImpl.updateQuantityById(alice, inputId, shoppingCartRequestDto);
+                = shoppingCartServiceImpl
+                .updateQuantityById(alice, INPUT_ID, shoppingCartRequestDto);
         assertNotNull(actual);
-        assertEquals(responseDto, actual);
+        assertEquals(shoppingCartResponseDto, actual);
         verify(shoppingCartRepository, times(ONE_TIME))
-                .findShoppingCartByUserId(ALICE_ID);
+                .getShoppingCartByUserId(ALICE_ID);
         verify(shoppingCartRepository, times(ONE_TIME))
                 .save(shoppingCart);
     }
@@ -259,9 +280,12 @@ class ShoppingCartServiceImplTest {
             Verify throwing exception with invalid cartItemId
             """)
     void updateQuantityById_InvalidCartItemId_ThrowException() {
+        // when
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> shoppingCartServiceImpl.updateQuantityById(alice,
                         INVALID_CART_ITEM_ID, new ShoppingCartRequestDto().setQuantity(3)));
+
+        // then
         String expected = FIND_CART_ITEM_EXCEPTION + INVALID_CART_ITEM_ID;
         String actual = exception.getMessage();
         assertNotNull(actual);
