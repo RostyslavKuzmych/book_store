@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
+    private static final String EXCEPTION = "Expired or invalid JWT token";
 
     @Value("${jwt.expiration}")
     private long expiration;
@@ -39,7 +40,7 @@ public class JwtUtil {
                     .build().parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException("Expired or invalid JWT token");
+            throw new JwtException(EXCEPTION);
         }
     }
 

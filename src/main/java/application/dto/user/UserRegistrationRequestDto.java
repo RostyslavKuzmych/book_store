@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
+@Accessors(chain = true)
 @FieldMatch
 @Accessors(chain = true)
 public class UserRegistrationRequestDto {

@@ -160,7 +160,7 @@ class CategoryControllerTest {
         MvcResult mvcResult = mockMvc.perform(put(API + HORROR_ID)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isContinue())
+                .andExpect(status().isOk())
                 .andReturn();
 
         // then
