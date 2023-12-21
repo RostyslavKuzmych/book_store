@@ -34,6 +34,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 class CategoryControllerTest {
     protected static MockMvc mockMvc;
     private static final String CLASSICS_ID = "/3";
+    private static final String BOOKS = "/books";
     private static final String ADVENTURE_DESCRIPTION
             = "Thrilling journeys and exciting escapades into the unknown.";
     private static final Integer CLASSICS_ID_INT0_LIST = 2;
@@ -43,8 +44,6 @@ class CategoryControllerTest {
     private static final String FANTASY_ID = "/7";
     private static final String ID = "id";
     private static final String API = "/api/categories";
-    private static final String USER = "USER";
-    private static final String ADMIN = "ADMIN";
     private static final String PATH = "classpath:database/categories/";
     private static final String FICTION_DESCRIPTION = "Genre encompassing all types of works "
             + "created based on imagination or invention";
@@ -79,20 +78,23 @@ class CategoryControllerTest {
     @DisplayName("""
             Verify createCategory() method with valid categoryRequest
             """)
-    @WithMockUser(username = "admin", roles = ADMIN)
+    @WithMockUser(username = "admin", roles = {ControllerTestUtil.ADMIN})
     @Sql(scripts = PATH + "remove_category_adventure_from_categories_table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void createCategory_ValidCategoryRequest_ReturnCategoryDto() throws Exception {
+        // given
         CategoryRequestDto adventureRequest =
                 new CategoryRequestDto().setName("adventure")
                         .setDescription(ADVENTURE_DESCRIPTION);
         String jsonRequest = objectMapper.writeValueAsString(adventureRequest);
 
+        // when
         MvcResult mvcResult = mockMvc.perform(post(API).content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
 
+        // then
         CategoryDto expected =
                 new CategoryDto().setName(adventureRequest.getName())
                         .setDescription(adventureRequest.getDescription());
@@ -104,13 +106,15 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     @DisplayName("""
             Verify getAll() method
             """)
     void getAll_NonEmptyDb_ReturnThreeCategories() throws Exception {
+        // when
         MvcResult mvcResult = mockMvc.perform(get(API)).andReturn();
 
+        // then
         List<CategoryDto> expected = categoryList;
         List<CategoryDto> actual = objectMapper
                 .readValue(mvcResult.getResponse().getContentAsString(),
@@ -120,13 +124,15 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     @DisplayName("""
             Verify getCategoryById() method with correct categoryId
             """)
-    void getCategoryById_ValidCategoryId_ReturnClassicsCategory() throws Exception {
+    void getCategoryById_ValidCategoryId_ReturnCategoryDto() throws Exception {
+        // when
         MvcResult mvcResult = mockMvc.perform(get(API + CLASSICS_ID)).andReturn();
 
+        // then
         CategoryDto expected = categoryList.get(CLASSICS_ID_INT0_LIST);
         CategoryDto actual = objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                 CategoryDto.class);
@@ -135,7 +141,7 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {ADMIN})
+    @WithMockUser(username = "admin", roles = ControllerTestUtil.ADMIN)
     @DisplayName("""
             Verify updateBook() method with correct categoryRequest
             """)
@@ -144,17 +150,20 @@ class CategoryControllerTest {
     @Sql(scripts = PATH + "remove_category_mystery_from_categories_table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void updateBook_ValidCategoryRequest_Success() throws Exception {
+        // given
         CategoryRequestDto mysteryRequest =
                 new CategoryRequestDto().setName("mystery")
                         .setDescription("Wonderful category");
         String jsonRequest = objectMapper.writeValueAsString(mysteryRequest);
 
+        // when
         MvcResult mvcResult = mockMvc.perform(put(API + HORROR_ID)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isContinue())
                 .andReturn();
 
+        // then
         CategoryDto expected =
                 new CategoryDto().setId(HORROR_ID_INTO_DB)
                         .setName(mysteryRequest.getName())
@@ -166,34 +175,39 @@ class CategoryControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "admin", roles = {ADMIN, USER})
+    @WithMockUser(username = "admin",
+            roles = {ControllerTestUtil.ADMIN, ControllerTestUtil.USER})
     @DisplayName("""
             Verify deleteCategory() method with valid categoryId
             """)
     @Sql(scripts = PATH + "save_category_fantasy_to_categories_table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteBook_ValidCategoryId_Success() throws Exception {
+        // when
         mockMvc.perform(delete(API + FANTASY_ID))
                 .andExpect(status().isNoContent());
         MvcResult mvcResult = mockMvc.perform(get(API)).andReturn();
 
+        // then
         List<CategoryDto> expected = categoryList;
         List<CategoryDto> actual =
                 objectMapper.readValue(mvcResult.getResponse().getContentAsString(),
                     new TypeReference<List<CategoryDto>>() {});
-        assertEquals(expected, actual);
         assertEquals(3, actual.size());
+        assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("""
             Verify getBooksByCategoryId() method with correct categoryId
             """)
-    @WithMockUser(username = "user", roles = USER)
+    @WithMockUser(username = "user", roles = ControllerTestUtil.USER)
     void getBooksByCategoryId_ValidCategoryId_ReturnTwoBooks() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(get(API + NOVEL_ID + "/books"))
+        // when
+        MvcResult mvcResult = mockMvc.perform(get(API + NOVEL_ID + BOOKS))
                 .andReturn();
 
+        // then
         BookDtoWithoutCategoriesIds prideAndPrejudiceDto =
                 new BookDtoWithoutCategoriesIds().setId(2L)
                 .setTitle("Pride and Prejudice")

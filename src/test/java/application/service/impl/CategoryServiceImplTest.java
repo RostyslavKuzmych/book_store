@@ -27,6 +27,7 @@ import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
+    private static final String EXCEPTION = "Can't find category by id ";
     private static final Integer FICTION_ID = 0;
     private static final Integer NOVEL_ID = 1;
     private static final Integer CLASSICS_ID = 2;
@@ -64,10 +65,13 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify findAll() method
+            Verify getAll() method
             """)
-    void findAllCategories_ValidPageable_ReturnExpectedList() {
+    void findAllCategories_ValidPageable_ReturnThreeCategoryDto() {
+        // given
         PageImpl<Category> categoryPage = new PageImpl<>(categories);
+
+        // when
         when(categoryRepository
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE)))
                 .thenReturn(categoryPage);
@@ -78,13 +82,13 @@ class CategoryServiceImplTest {
         when(categoryMapper.toDto(categories.get(CLASSICS_ID)))
                 .thenReturn(categoryDtos.get(CLASSICS_ID));
 
+        // then
         List<CategoryDto> expected
                 = List.of(categoryDtos.get(FICTION_ID), categoryDtos.get(NOVEL_ID),
                 categoryDtos.get(CLASSICS_ID));
         List<CategoryDto> actual
                 = categoryServiceImpl
                 .findAll(PageRequest.of(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE));
-
         assertEquals(3, actual.size());
         assertEquals(expected, actual);
         verify(categoryRepository, times(ONE_TIME))
@@ -93,43 +97,45 @@ class CategoryServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify correct categoryDto with categoryId
+            Verify findCategoryById() method with correct categoryId
             """)
-    void findCategoryById_ValidCategoryId_ReturnExpectedCategory() {
+    void findCategoryById_ValidCategoryId_ReturnCategoryDto() {
+        // when
         when(categoryRepository.findById(VALID_ID))
                 .thenReturn(Optional.ofNullable(categories.get(FICTION_ID)));
         when(categoryMapper.toDto(categories.get(FICTION_ID)))
                 .thenReturn(categoryDtos.get(FICTION_ID));
 
+        // then
         CategoryDto actual = categoryServiceImpl.getById(VALID_ID);
         assertNotNull(actual);
         assertEquals(categoryDtos.get(FICTION_ID), actual);
-        verify(categoryRepository, times(ONE_TIME))
-                .findById(VALID_ID);
+        verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
     }
 
     @Test
     @DisplayName("""
             Verify throwing exception with invalid categoryId
             """)
-    void findCategoryById_InvalidCategoryId_ReturnException() {
-        when(categoryRepository.findById(INVALID_ID)).thenReturn(Optional.empty());
-
+    void findCategoryById_InvalidCategoryId_ThrowException() {
+        // when
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> categoryServiceImpl.getById(INVALID_ID));
-        String expected = "Can't find category by id " + INVALID_ID;
+
+        // then
+        String expected = EXCEPTION + INVALID_ID;
         String actual = exception.getMessage();
         assertNotNull(actual);
         assertEquals(expected, actual);
-        verify(categoryRepository, times(ONE_TIME))
-                .findById(INVALID_ID);
+        verify(categoryRepository, times(ONE_TIME)).findById(INVALID_ID);
     }
 
     @Test
     @DisplayName("""
             Verify save() method with correct categoryRequest
             """)
-    void saveCategory_ValidCategoryRequestDto_ReturnCategoryDto() {
+    void saveCategory_ValidCategoryRequest_ReturnCategoryDto() {
+        // given
         CategoryRequestDto horrorRequestDto
                 = new CategoryRequestDto().setName("Horror")
                 .setDescription("Unbelievable genre");
@@ -140,22 +146,24 @@ class CategoryServiceImplTest {
                 .setName(horror.getName())
                 .setDescription(horror.getDescription());
 
+        // when
         when(categoryMapper.toEntity(horrorRequestDto)).thenReturn(horror);
         when(categoryRepository.save(horror)).thenReturn(horror);
         when(categoryMapper.toDto(horror)).thenReturn(horrorDto);
 
+        // then
         CategoryDto actual = categoryServiceImpl.save(horrorRequestDto);
         assertNotNull(actual);
         assertEquals(horrorDto, actual);
-        verify(categoryRepository, times(ONE_TIME))
-                .save(horror);
+        verify(categoryRepository, times(ONE_TIME)).save(horror);
     }
 
     @Test
     @DisplayName("""
-            Verify update() method with correct params
+            Verify update() method with correct requestDto
             """)
-    void updateCategoryById_ValidParams_ReturnCategoryDto() {
+    void updateCategory_ValidCategoryRequest_ReturnCategoryDto() {
+        // given
         CategoryRequestDto mysteryRequestDto = new CategoryRequestDto()
                 .setName("Mystery")
                 .setDescription("Worth reading");
@@ -164,18 +172,21 @@ class CategoryServiceImplTest {
                 .setDescription(mysteryRequestDto.getDescription());
         CategoryDto mysteryDto = new CategoryDto()
                 .setName(mystery.getName())
-                        .setDescription(mystery.getDescription());
+                .setDescription(mystery.getDescription());
 
+        // when
         when(categoryRepository.findById(VALID_ID))
                 .thenReturn(Optional.ofNullable(categories.get(NOVEL_ID)));
         when(categoryMapper.toEntity(mysteryRequestDto)).thenReturn(mystery);
         when(categoryRepository.save(mystery)).thenReturn(mystery);
         when(categoryMapper.toDto(mystery)).thenReturn(mysteryDto);
 
+        // then
         CategoryDto actual = categoryServiceImpl.update(VALID_ID, mysteryRequestDto);
         assertNotNull(actual);
         assertEquals(mysteryDto, actual);
-        verify(categoryRepository, times(ONE_TIME))
-                .findById(VALID_ID);
+        verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
+        verify(categoryRepository, times(ONE_TIME)).save(mystery);
     }
 }
+
