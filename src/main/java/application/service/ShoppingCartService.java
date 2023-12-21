@@ -7,11 +7,11 @@ import application.model.ShoppingCart;
 import application.model.User;
 
 public interface ShoppingCartService {
-    void createShoppingCart(User user);
+    ShoppingCartResponseDto createShoppingCart(User user);
 
     ShoppingCartResponseDto getShoppingCartDto(Long userId);
 
-    void clearShoppingCart(ShoppingCart shoppingCart);
+    ShoppingCartResponseDto clearShoppingCart(ShoppingCart shoppingCart);
 
     ShoppingCartResponseDto updateQuantityById(User user,
                                                Long cartItemId,

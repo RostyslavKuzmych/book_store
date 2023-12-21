@@ -72,9 +72,9 @@ public class OrderServiceImpl implements OrderService {
         order.setUser(shoppingCart.getUser());
         order.setStatus(Status.RECEIVED);
         Order savedOrder = orderRepository.save(order);
-        order.setItemSet(populateWithOrderItems(savedOrder, shoppingCart));
-        order.setTotal(getTotalPrice(order.getItemSet()));
-        return order;
+        savedOrder.setItemSet(populateWithOrderItems(savedOrder, shoppingCart));
+        savedOrder.setTotal(getTotalPrice(order.getItemSet()));
+        return savedOrder;
     }
 
     private OrderItem addPriceToOrderItem(OrderItem orderItem, Order order) {

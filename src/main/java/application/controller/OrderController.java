@@ -44,7 +44,7 @@ public class OrderController {
         User user = (User) authentication.getPrincipal();
         return orderService
                 .createOrder(shoppingCartRepository
-                        .findShoppingCartByUserId(user.getId()), dto);
+                        .getShoppingCartByUserId(user.getId()), dto);
     }
 
     @GetMapping

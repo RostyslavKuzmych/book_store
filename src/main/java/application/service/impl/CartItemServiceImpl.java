@@ -48,7 +48,7 @@ public class CartItemServiceImpl implements CartItemService {
         cartItem.setBook(bookMapper
                 .toModelFromDto(bookService.getBookDtoById(cartItem.getBook().getId())));
         cartItem.setShoppingCart(shoppingCart);
-        return cartItemMapper.toCartItemResponseDto(cartItemRepository.save(cartItem));
+        return save(cartItem);
     }
 
     @Override
