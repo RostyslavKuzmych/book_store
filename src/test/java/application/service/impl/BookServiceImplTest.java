@@ -188,17 +188,8 @@ class BookServiceImplTest {
     @DisplayName("""
             Verify getBookDtoById() method with invalid bookId
             """)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    void findBookById_InvalidBookId_ReturnException() {
-=======
     void findBookById_InvalidBookId_ThrowException() {
         // when
->>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
-=======
-    void findBookById_InvalidBookId_ThrowException() {
-        // when
->>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
         Exception exception = assertThrows(EntityNotFoundException.class,
                 () -> bookServiceImpl.getBookDtoById(INVALID_BOOK_ID));
 
@@ -244,14 +235,7 @@ class BookServiceImplTest {
         assertNotNull(actual);
         assertEquals(animalFarmDto, actual);
         verify(bookRepository, times(ONE_TIME)).findById(VALID_BOOK_ID);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
         verify(bookRepository, times(ONE_TIME)).save(animalFarm);
->>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
-=======
-        verify(bookRepository, times(ONE_TIME)).save(animalFarm);
->>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
     }
 
     @Test
@@ -261,8 +245,8 @@ class BookServiceImplTest {
     void getBooksByParams_ValidParams_ReturnOneBook() {
         // given
         BookSearchParametersDto bookSearchParametersDto
-                        = new BookSearchParametersDto(new String[]{"1984"},
-                                new String[]{"George Orwell"});
+                = new BookSearchParametersDto(new String[]{"1984"},
+                        new String[]{"George Orwell"});
 
         // when
         when(specificationBuilder
@@ -311,4 +295,3 @@ class BookServiceImplTest {
                 .findAllByCategoryId(VALID_CATEGORY_ID);
     }
 }
-
