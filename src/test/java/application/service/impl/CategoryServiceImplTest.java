@@ -66,10 +66,14 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("""
 <<<<<<< HEAD
+<<<<<<< HEAD
             Verify findAll() method
 =======
             Verify getAll() method
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+            Verify getAll() method
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
             """)
     void findAllCategories_ValidPageable_ReturnThreeCategoryDto() {
         // given
@@ -102,10 +106,14 @@ class CategoryServiceImplTest {
     @Test
     @DisplayName("""
 <<<<<<< HEAD
+<<<<<<< HEAD
             Verify correct categoryDto with categoryId
 =======
             Verify findCategoryById() method with correct categoryId
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+            Verify findCategoryById() method with correct categoryId
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
             """)
     void findCategoryById_ValidCategoryId_ReturnCategoryDto() {
         // when
@@ -119,11 +127,15 @@ class CategoryServiceImplTest {
         assertNotNull(actual);
         assertEquals(categoryDtos.get(FICTION_ID), actual);
 <<<<<<< HEAD
+<<<<<<< HEAD
         verify(categoryRepository, times(ONE_TIME))
                 .findById(VALID_ID);
 =======
         verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+        verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
     }
 
     @Test
@@ -141,11 +153,15 @@ class CategoryServiceImplTest {
         assertNotNull(actual);
         assertEquals(expected, actual);
 <<<<<<< HEAD
+<<<<<<< HEAD
         verify(categoryRepository, times(ONE_TIME))
                 .findById(INVALID_ID);
 =======
         verify(categoryRepository, times(ONE_TIME)).findById(INVALID_ID);
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+        verify(categoryRepository, times(ONE_TIME)).findById(INVALID_ID);
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
     }
 
     @Test
@@ -174,11 +190,15 @@ class CategoryServiceImplTest {
         assertNotNull(actual);
         assertEquals(horrorDto, actual);
 <<<<<<< HEAD
+<<<<<<< HEAD
         verify(categoryRepository, times(ONE_TIME))
                 .save(horror);
 =======
         verify(categoryRepository, times(ONE_TIME)).save(horror);
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+        verify(categoryRepository, times(ONE_TIME)).save(horror);
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
     }
 
     @Test
@@ -186,11 +206,16 @@ class CategoryServiceImplTest {
             Verify update() method with correct requestDto
             """)
 <<<<<<< HEAD
+<<<<<<< HEAD
     void updateCategoryById_ValidParams_ReturnCategoryDto() {
 =======
     void updateCategory_ValidCategoryRequest_ReturnCategoryDto() {
         // given
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+    void updateCategory_ValidCategoryRequest_ReturnCategoryDto() {
+        // given
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
         CategoryRequestDto mysteryRequestDto = new CategoryRequestDto()
                 .setName("Mystery")
                 .setDescription("Worth reading");
@@ -213,11 +238,17 @@ class CategoryServiceImplTest {
         assertNotNull(actual);
         assertEquals(mysteryDto, actual);
 <<<<<<< HEAD
+<<<<<<< HEAD
         verify(categoryRepository, times(ONE_TIME))
                 .findById(VALID_ID);
 =======
         verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
         verify(categoryRepository, times(ONE_TIME)).save(mystery);
 >>>>>>> d3f759ea45dd7fff4ca70074796c63ee4ecc2efb
+=======
+        verify(categoryRepository, times(ONE_TIME)).findById(VALID_ID);
+        verify(categoryRepository, times(ONE_TIME)).save(mystery);
+>>>>>>> 97bffe1b6c514f7fed73285654358f277a70f043
     }
 }
+
