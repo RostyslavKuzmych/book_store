@@ -1,8 +1,13 @@
 package application.repository;
 
+import static org.junit.Assert.assertEquals;
+
 import application.model.Book;
 import application.model.Order;
 import application.model.OrderItem;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,19 +15,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = "classpath:database/orders/save_three_orders_to_orders_table.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:database/order_items/save_three_order_items_to_order_items_table.sql",
+@Sql(scripts = "classpath:database/order_items/save_three_orderItems_to_order_items_table.sql",
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "classpath:database/order_items/remove_three_order_items_from_order_items_table.sql",
+@Sql(scripts = "classpath:database/order_items/remove_three_orderItems_from_order_items_table.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @Sql(scripts = "classpath:database/orders/remove_three_orders_from_orders_table.sql",
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -30,6 +29,7 @@ class OrderItemRepositoryTest {
     private static final Long INVALID_ORDER_ID = 100L;
     @Autowired
     private OrderItemRepository orderItemRepository;
+
     @Test
     @DisplayName("""
             Verify findAllByOrderId() method with correct orderId
@@ -41,14 +41,14 @@ class OrderItemRepositoryTest {
                 .setBook(new Book().setId(1L))
                 .setOrder(new Order().setId(2L))
                 .setQuantity(5)
-                .setPrice(BigDecimal.valueOf(50));
+                .setPrice(BigDecimal.valueOf(55));
         OrderItem bigOrderItem
                 = new OrderItem()
                 .setId(2L)
                 .setBook(new Book().setId(2L))
                 .setOrder(new Order().setId(2L))
-                .setQuantity(10)
-                .setPrice(BigDecimal.valueOf(80));
+                .setQuantity(7)
+                .setPrice(BigDecimal.valueOf(140));
         List<OrderItem> expected =
                 List.of(smallOrderItem, bigOrderItem);
         List<OrderItem> actual
@@ -67,8 +67,8 @@ class OrderItemRepositoryTest {
                 .setId(3L)
                 .setBook(new Book().setId(3L))
                 .setOrder(new Order().setId(1L))
-                .setQuantity(12)
-                .setPrice(BigDecimal.valueOf(100));
+                .setQuantity(20)
+                .setPrice(BigDecimal.valueOf(180));
         List<OrderItem> expected =
                 List.of(veryBigOrderItem);
         List<OrderItem> actual

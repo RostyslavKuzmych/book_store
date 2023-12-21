@@ -1,3 +1,3 @@
-insert into orders (id, user_id, status, order_date, total, shipping_address) values (1, 2, 'RECEIVED', '2023-12-17 02:00:00', 100, 'Shevchenko 123A');
-insert into orders (id, user_id, status, order_date, total, shipping_address) values (2, 2, 'RECEIVED', '2023-12-17 03:00:00', 130, 'Shevchenko 123A');
+insert into orders (id, user_id, status, order_date, total, shipping_address) values (1, 2, 'RECEIVED', '2023-12-17 02:00:00', 180, 'Shevchenko 123A');
+insert into orders (id, user_id, status, order_date, total, shipping_address) values (2, 2, 'RECEIVED', '2023-12-17 03:00:00', 195, 'Shevchenko 123A');
 insert into orders (id, user_id, status, order_date, shipping_address) values (3, 1, 'RECEIVED', '2023-12-19 12:00:00', 'Shevchenko 122')

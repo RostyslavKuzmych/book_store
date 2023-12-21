@@ -1,16 +1,15 @@
 package application.repository;
 
+import static org.junit.Assert.assertEquals;
+
 import application.model.User;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
-
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

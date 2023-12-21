@@ -1,22 +1,20 @@
 package application.repository;
 
+import static org.junit.Assert.assertEquals;
+
 import application.model.Order;
 import application.model.Status;
 import application.model.User;
-import org.junit.jupiter.api.Disabled;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -43,7 +41,7 @@ class OrderRepositoryTest {
                         LocalDateTime.of(2023, 12, 17, 2, 0, 0)
                 ).setStatus(Status.RECEIVED)
                 .setShippingAddress("Shevchenko 123A")
-                .setTotal(BigDecimal.valueOf(100));
+                .setTotal(BigDecimal.valueOf(180));
         Order secondAliceOrder = new Order()
                 .setId(2L)
                 .setUser(new User().setId(ALICE_ID))
@@ -51,12 +49,13 @@ class OrderRepositoryTest {
                         LocalDateTime.of(2023, 12, 17, 3, 0, 0)
                 ).setStatus(Status.RECEIVED)
                 .setShippingAddress("Shevchenko 123A")
-                .setTotal(BigDecimal.valueOf(130));
+                .setTotal(BigDecimal.valueOf(195));
         List<Order> expected = List.of(firstAliceOrder, secondAliceOrder);
         List<Order> actual = orderRepository.findAllByUserId(ALICE_ID);
         assertEquals(2, actual.size());
         assertEquals(expected, actual);
     }
+
     @Test
     @DisplayName("""
             Verify findAllByUserId() method with correct userId
