@@ -62,7 +62,7 @@ public class CategoryController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Update a category by id", description
             = "Endpoint for updating a category by id in the db")
-    @ResponseStatus(HttpStatus.CONTINUE)
+    @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(@PathVariable Long id,
                                       @RequestBody @Valid CategoryRequestDto categoryDto) {
         return categoryService.update(id, categoryDto);

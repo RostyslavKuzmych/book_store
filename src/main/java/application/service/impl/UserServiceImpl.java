@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String EXCEPTION = "You are already registered!";
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
         if (!userRepository.findUserByEmail(requestDto.getEmail()).isEmpty()) {
-            throw new RegistrationException("You are already registered!");
+            throw new RegistrationException(EXCEPTION);
         }
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
