@@ -31,6 +31,8 @@ class CartItemServiceImplTest {
     private static final Long CART_ITEM_LOVE_IS_BOOK_ID = 2L;
     private static final Integer ONE_TIME = 1;
     private static final String BOOK_1984 = "1984";
+    private static final String ALICE_EMAIL = "alice@gmail.com";
+    private static final Long ALICE_ID = 2L;
     @Mock
     private CartItemRepository cartItemRepository;
     @Mock
@@ -77,7 +79,7 @@ class CartItemServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify createCartItem() with correct requestDto
+            Verify createCartItem() with correct cartItemRequest
             """)
     void createCartItem_ValidCartItemRequest_ReturnCartItemDto() {
         // given
@@ -94,7 +96,7 @@ class CartItemServiceImplTest {
         ShoppingCart shoppingCart
                 = new ShoppingCart()
                 .setId(1L)
-                .setUser(new User().setId(1L).setEmail("alice@gmail.com"));
+                .setUser(new User().setId(ALICE_ID).setEmail(ALICE_EMAIL));
         CartItemRequestDto cartItemRequestDto
                 = new CartItemRequestDto()
                 .setBookId(book1984.getId())

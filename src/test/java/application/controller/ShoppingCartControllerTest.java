@@ -44,6 +44,8 @@ class ShoppingCartControllerTest {
     private static final String ALICE_PASSWORD = "12345678";
     private static CartItemResponseDto smallCartItemDto;
     private static CartItemResponseDto bigCartItemDto;
+    private static String BOOK_1984 = "1984";
+    private static String PRIDE_AND_PREJUDICE = "Pride and Prejudice";
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -55,11 +57,11 @@ class ShoppingCartControllerTest {
         smallCartItemDto = new CartItemResponseDto()
                 .setId(3L)
                 .setBookId(2L)
-                .setBookTitle("Pride and Prejudice")
+                .setBookTitle(PRIDE_AND_PREJUDICE)
                 .setQuantity(12);
         bigCartItemDto = new CartItemResponseDto()
                 .setId(4L)
-                .setBookTitle("1984")
+                .setBookTitle(BOOK_1984)
                 .setBookId(3L)
                 .setQuantity(10);
     }
@@ -97,7 +99,7 @@ class ShoppingCartControllerTest {
         CartItemResponseDto cartItemResponseDto
                 = new CartItemResponseDto()
                 .setId(5L)
-                .setBookTitle("1984")
+                .setBookTitle(BOOK_1984)
                 .setBookId(cartItemRequestDto.getBookId())
                 .setQuantity(cartItemRequestDto.getQuantity());
         ShoppingCartResponseDto shoppingCartResponseDto
@@ -109,7 +111,8 @@ class ShoppingCartControllerTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(post(BASE_URL)
-                        .content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+                        .content(jsonRequest)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -166,7 +169,7 @@ class ShoppingCartControllerTest {
                 = new CartItemResponseDto()
                 .setId(6L)
                 .setBookId(3L)
-                .setBookTitle("1984")
+                .setBookTitle(BOOK_1984)
                 .setQuantity(shoppingCartRequestDto.getQuantity());
         ShoppingCartResponseDto shoppingCartResponseDto
                 = new ShoppingCartResponseDto()

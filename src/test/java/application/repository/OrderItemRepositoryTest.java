@@ -8,6 +8,7 @@ import application.model.OrderItem;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,28 +28,39 @@ import org.springframework.test.context.jdbc.Sql;
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class OrderItemRepositoryTest {
     private static final Long INVALID_ORDER_ID = 100L;
+    private static OrderItem smallOrderItem;
+    private static OrderItem bigOrderItem;
+    private static OrderItem veryBigOrderItem;
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @BeforeAll
+    static void beforeAll() {
+        smallOrderItem = new OrderItem()
+                .setId(1L)
+                .setBook(new Book().setId(1L))
+                .setOrder(new Order().setId(2L))
+                .setQuantity(5)
+                .setPrice(BigDecimal.valueOf(55));
+        bigOrderItem = new OrderItem()
+                .setId(2L)
+                .setBook(new Book().setId(2L))
+                .setOrder(new Order().setId(2L))
+                .setQuantity(7)
+                .setPrice(BigDecimal.valueOf(140));
+        veryBigOrderItem = new OrderItem()
+                .setId(3L)
+                .setBook(new Book().setId(3L))
+                .setOrder(new Order().setId(1L))
+                .setQuantity(20)
+                .setPrice(BigDecimal.valueOf(180));
+    }
 
     @Test
     @DisplayName("""
             Verify findAllByOrderId() method with correct orderId
             """)
     void findAllByOrderId_ValidOrderId_ReturnTwoOrderItems() {
-        OrderItem smallOrderItem
-                = new OrderItem()
-                .setId(1L)
-                .setBook(new Book().setId(1L))
-                .setOrder(new Order().setId(2L))
-                .setQuantity(5)
-                .setPrice(BigDecimal.valueOf(55));
-        OrderItem bigOrderItem
-                = new OrderItem()
-                .setId(2L)
-                .setBook(new Book().setId(2L))
-                .setOrder(new Order().setId(2L))
-                .setQuantity(7)
-                .setPrice(BigDecimal.valueOf(140));
         List<OrderItem> expected =
                 List.of(smallOrderItem, bigOrderItem);
         List<OrderItem> actual
@@ -62,13 +74,6 @@ class OrderItemRepositoryTest {
             Verify findAllByOrderId() method with correct orderId
             """)
     void findAllByOrderId_ValidOrderId_ReturnOrderItem() {
-        OrderItem veryBigOrderItem
-                = new OrderItem()
-                .setId(3L)
-                .setBook(new Book().setId(3L))
-                .setOrder(new Order().setId(1L))
-                .setQuantity(20)
-                .setPrice(BigDecimal.valueOf(180));
         List<OrderItem> expected =
                 List.of(veryBigOrderItem);
         List<OrderItem> actual

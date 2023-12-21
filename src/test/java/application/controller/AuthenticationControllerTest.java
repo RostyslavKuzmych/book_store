@@ -1,5 +1,6 @@
 package application.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,14 +22,20 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AuthenticationControllerTest {
     protected static MockMvc mockMvc;
     private static final String PATH_USERS = "classpath:database/users/";
     private static final String PATH_SHOPPING_CARTS = "classpath:database/shopping_carts/";
-    private static final String ID = "id";
+    private static final String CLARK_EMAIL = "clark@example.com";
+    private static final String CLARK_PASSWORD = "clark123";
+    private static final String CLARK_FIRST_NAME = "clark";
+    private static final String CLARK_LAST_NAME = "johnson";
+    private static final String CLARK_SHIPPING_ADDRESS = "Shevchenko 1";
+    private static final Long CLARK_ID = 3L;
+    private static final String ALICE_EMAIL = "alice@example.com";
+    private static final String ALICE_PASSWORD = "12345678";
     private static final String BASE_URL = "/api/auth";
     private static final String REGISTRATION = "/registration";
     private static final String LOGIN = "/login";
@@ -55,17 +62,18 @@ class AuthenticationControllerTest {
         // given
         UserRegistrationRequestDto clarkRequestDto
                 = new UserRegistrationRequestDto()
-                .setEmail("clark@example.com")
-                .setPassword("clark123")
-                .setFirstName("clark")
-                .setLastName("johnson")
-                .setRepeatPassword("clark123")
-                .setShippingAddress("Shevchenko 1");
+                .setEmail(CLARK_EMAIL)
+                .setPassword(CLARK_PASSWORD)
+                .setFirstName(CLARK_FIRST_NAME)
+                .setLastName(CLARK_LAST_NAME)
+                .setRepeatPassword(CLARK_PASSWORD)
+                .setShippingAddress(CLARK_SHIPPING_ADDRESS);
         UserResponseDto clarkResponseDto = new UserResponseDto()
-                        .setEmail(clarkRequestDto.getEmail())
+                .setEmail(clarkRequestDto.getEmail())
                 .setFirstName(clarkRequestDto.getFirstName())
                 .setLastName(clarkRequestDto.getLastName())
-                .setShippingAddress(clarkRequestDto.getShippingAddress());
+                .setShippingAddress(clarkRequestDto.getShippingAddress())
+                .setId(CLARK_ID);
         String jsonRequest = objectMapper.writeValueAsString(clarkRequestDto);
 
         // when
@@ -79,7 +87,7 @@ class AuthenticationControllerTest {
         UserResponseDto actual = objectMapper
                 .readValue(mvcResult.getResponse().getContentAsString(), UserResponseDto.class);
         assertNotNull(actual.getId());
-        EqualsBuilder.reflectionEquals(clarkResponseDto, actual, ID);
+        assertEquals(clarkResponseDto, actual);
     }
 
     @Test
@@ -89,7 +97,7 @@ class AuthenticationControllerTest {
     void login_ValidUserRequest_ReturnToken() throws Exception {
         // given
         UserLoginRequestDto aliceLoginRequestDto
-                = new UserLoginRequestDto("alice@example.com", "12345678");
+                = new UserLoginRequestDto(ALICE_EMAIL, ALICE_PASSWORD);
         String jsonRequest = objectMapper.writeValueAsString(aliceLoginRequestDto);
 
         // when

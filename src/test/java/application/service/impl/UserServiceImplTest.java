@@ -16,6 +16,7 @@ import application.model.User;
 import application.repository.UserRepository;
 import application.service.ShoppingCartService;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,9 +28,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     private static final Integer ONE_TIME = 1;
+    private static final String CLARK_EMAIL = "clark@example.com";
+    private static final String CLARK_PASSWORD = "clark123";
+    private static final String CLARK_FIRST_NAME = "clark";
+    private static final Long CLARK_ID = 3L;
+    private static final String CLARK_LAST_NAME = "johnson";
+    private static final String CLARK_SHIPPING_ADDRESS = "Shevchenko 1";
     private static final String ENCODED_PASSWORD
             = "$2a$10$nA2TJNchONFwvYeKf7kALuwncLTIoFuywvK4YMa21IrRL.pcB/645";
     private static final String EXCEPTION = "You are already registered!";
+    private static User clark;
+    private static UserRegistrationRequestDto clarkRequestDto;
     @Mock
     private UserMapper userMapper;
     @Mock
@@ -41,26 +50,29 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userServiceImpl;
 
+    @BeforeAll
+    static void beforeAll() {
+        clark = new User()
+                .setId(CLARK_ID)
+                .setEmail(CLARK_EMAIL)
+                .setFirstName(CLARK_FIRST_NAME)
+                .setLastName(CLARK_LAST_NAME)
+                .setShippingAddress(CLARK_SHIPPING_ADDRESS);
+        clarkRequestDto = new UserRegistrationRequestDto()
+                .setEmail(CLARK_EMAIL)
+                .setPassword(CLARK_PASSWORD)
+                .setFirstName(CLARK_FIRST_NAME)
+                .setLastName(CLARK_LAST_NAME)
+                .setRepeatPassword(CLARK_PASSWORD)
+                .setShippingAddress(CLARK_SHIPPING_ADDRESS);
+    }
+
     @Test
     @DisplayName("""
             Verify register() method with nonRegisteredUser
             """)
     void register_NonRegisteredUser_ReturnUserResponseDto() {
         // given
-        UserRegistrationRequestDto clarkRequestDto
-                = new UserRegistrationRequestDto()
-                .setEmail("clark@example.com")
-                .setPassword("clark123")
-                .setFirstName("clark")
-                .setLastName("johnson")
-                .setRepeatPassword("clark123")
-                .setShippingAddress("Shevchenko 1");
-        User clark = new User()
-                .setId(2L)
-                .setEmail(clarkRequestDto.getEmail())
-                .setFirstName(clarkRequestDto.getFirstName())
-                .setLastName(clarkRequestDto.getLastName())
-                .setShippingAddress(clarkRequestDto.getShippingAddress());
         UserResponseDto clarkResponseDto
                 = new UserResponseDto()
                 .setId(clark.getId())
@@ -98,25 +110,14 @@ class UserServiceImplTest {
             Verify register() method with registeredUser
             """)
     void register_RegisteredUser_ThrowException() {
-        // given
-        UserRegistrationRequestDto aliceRequestDto
-                = new UserRegistrationRequestDto()
-                .setEmail("alice@example.com")
-                .setPassword("alice123")
-                .setRepeatPassword("alice123")
-                .setFirstName("alice")
-                .setLastName("noy")
-                .setShippingAddress("Franko 12");
-
         // when
-        when(userRepository.findUserByEmail(aliceRequestDto.getEmail()))
-                .thenReturn(Optional.ofNullable(
-                        new User().setId(2L).setEmail(aliceRequestDto.getEmail())));
+        when(userRepository.findUserByEmail(clark.getEmail()))
+                .thenReturn(Optional.ofNullable(clark));
 
         // then
         Exception exception
                 = assertThrows(RegistrationException.class,
-                    () -> userServiceImpl.register(aliceRequestDto));
+                    () -> userServiceImpl.register(clarkRequestDto));
         String actual = exception.getMessage();
         assertNotNull(actual);
         assertEquals(EXCEPTION, actual);

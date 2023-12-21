@@ -31,6 +31,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class OrderItemServiceImplTest {
     private static final Integer ONE_TIME = 1;
+    private static final String SHIPPING_ADDRESS = "Shevchenko 22";
+    private static final String BOB_EMAIL = "bob@example.com";
     private static Order order;
     private static OrderItem bigOrderItem;
     private static OrderItem smallOrderItem;
@@ -49,9 +51,9 @@ class OrderItemServiceImplTest {
     static void beforeAll() {
         order = new Order()
                 .setId(2L)
-                .setShippingAddress("Shevchenko 22")
+                .setShippingAddress(SHIPPING_ADDRESS)
                 .setOrderDate(LocalDateTime.now().minusDays(3))
-                .setUser(new User().setId(2L).setEmail("bob@gmail.com"))
+                .setUser(new User().setId(2L).setEmail(BOB_EMAIL))
                 .setStatus(Status.DELIVERED);
         bigOrderItem
                 = new OrderItem()

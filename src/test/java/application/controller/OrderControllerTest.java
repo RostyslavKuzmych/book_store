@@ -53,6 +53,7 @@ class OrderControllerTest {
     private static final String ALICE_PASSWORD = "12345678";
     private static final String BASE_URL = "/api/orders";
     private static final Long ALICE_ID = 2L;
+    private static final String ALICE_SHIPPING_ADDRESS = "Shevchenko 123A";
     private static final String PATH_CART_ITEMS = "classpath:database/cart_items/";
     private static final String PATH_ORDER_ITEMS = "classpath:database/order_items/";
     private static final String PATH_ORDERS = "classpath:database/orders/";
@@ -115,7 +116,7 @@ class OrderControllerTest {
         // given
         OrderRequestShippingAddressDto shippingAddressDto
                 = new OrderRequestShippingAddressDto()
-                .setShippingAddress("Shevchenko 123A");
+                .setShippingAddress(ALICE_SHIPPING_ADDRESS);
         OrderItemResponseDto smallOrderItemDto
                 = new OrderItemResponseDto()
                 .setId(4L)

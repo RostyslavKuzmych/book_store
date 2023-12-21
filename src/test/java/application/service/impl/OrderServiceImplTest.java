@@ -40,7 +40,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
-    private static final Long ALICE_ID = 1L;
+    private static final String SHIPPING_ADDRESS = "Franko 10";
+    private static final Long ALICE_ID = 2L;
     private static final Integer ONE_TIME = 1;
     private static final Integer TWO_TIMES = 2;
     private static OrderItemResponseDto bigOrderItemDto;
@@ -74,10 +75,13 @@ class OrderServiceImplTest {
 
     @Test
     @DisplayName("""
-            Verify createOrder() method with correct inputs
+            Verify createOrder() method with correct orderRequest
             """)
-    void createOrder_ValidInputs_ReturnOrderDto() {
+    void createOrder_ValidOrderRequest_ReturnOrderDto() {
         // given
+        OrderRequestShippingAddressDto shippingAddressDto
+                = new OrderRequestShippingAddressDto()
+                .setShippingAddress(SHIPPING_ADDRESS);
         CartItem bigCartItem
                 = new CartItem()
                 .setId(1L)
@@ -91,16 +95,13 @@ class OrderServiceImplTest {
         ShoppingCart shoppingCart
                 = new ShoppingCart()
                 .setId(1L)
-                .setUser(new User().setId(2L))
+                .setUser(new User().setId(ALICE_ID))
                 .setCartItemSet(Set.of(bigCartItem, smallCartItem));
         ShoppingCartResponseDto shoppingCartResponseDto
                 = new ShoppingCartResponseDto()
                 .setId(shoppingCart.getId())
                 .setUserId(shoppingCart.getUser().getId())
                 .setCartItems(new HashSet<>());
-        OrderRequestShippingAddressDto shippingAddressDto
-                = new OrderRequestShippingAddressDto()
-                .setShippingAddress("Franko 10");
         Order order = new Order()
                 .setId(1L)
                 .setShippingAddress(shippingAddressDto.getShippingAddress())
@@ -157,7 +158,7 @@ class OrderServiceImplTest {
                 .setStatus(Status.DELIVERED)
                 .setUser(new User().setId(ALICE_ID))
                 .setOrderDate(LocalDateTime.now().minusDays(2))
-                .setShippingAddress("Franko 12")
+                .setShippingAddress(SHIPPING_ADDRESS)
                 .setTotal(BigDecimal.valueOf(160));
         OrderItem bigOrderItem = new OrderItem()
                 .setId(1L)
