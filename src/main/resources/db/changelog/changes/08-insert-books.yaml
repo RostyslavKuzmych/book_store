@@ -17,7 +17,7 @@ databaseChangeLog:
                   value: "9780743273565"
               - column:
                   name: price
-                  value: 10.99
+                  value: 11
               - column:
                   name: description
                   value: The story of the fabulously wealthy Jay Gatsby
@@ -38,13 +38,13 @@ databaseChangeLog:
                   value: "9780141439518"
               - column:
                   name: price
-                  value: 13.45
+                  value: 20
               - column:
                   name: description
                   value: A romantic novel
               - column:
                   name: cover_image
-                  value: "https://example.com/book1-cover-image.jpg"
+                  value: "https://example.com/book2-cover-image.jpg"
         - insert:
             tableName: books
             columns:
@@ -59,7 +59,7 @@ databaseChangeLog:
                   value: "9780451524935"
               - column:
                   name: price
-                  value: 9.25
+                  value: 9
               - column:
                   name: description
                   value: A dystopian social science fiction novel

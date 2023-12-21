@@ -16,14 +16,14 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 @Entity
-@Getter
-@Setter
+@Data
 @SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 @Table(name = "orders")
@@ -32,6 +32,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -50,6 +52,8 @@ public class Order {
     private String shippingAddress;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<OrderItem> itemSet = new HashSet<>();
 
     @Column(nullable = false)

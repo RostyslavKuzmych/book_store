@@ -18,8 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String TOKEN_IS_INVALID = "Token is invalid";
-    private static final String TOKEN_IS_EXPIRED = "Token is expired";
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer ";
     private final JwtUtil jwtUtil;
@@ -35,20 +33,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         String token = getToken(request);
-        boolean isValid = false;
-        try {
-            isValid = jwtUtil.isValidToken(token);
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(TOKEN_IS_INVALID);
-            return;
+        if (token != null && jwtUtil.isValidToken(token)) {
+            String userName = jwtUtil.extractUsername(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+            final Authentication authentication
+                    = new UsernamePasswordAuthenticationToken(userDetails,
+                    userDetails.getPassword(), userDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
-        String userName = jwtUtil.extractUsername(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-        final Authentication authentication
-                = new UsernamePasswordAuthenticationToken(userDetails,
-                userDetails.getPassword(), userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
     }
 

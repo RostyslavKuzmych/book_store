@@ -1,0 +1,1 @@
+insert into categories (id, name, description) values (7, 'fantasy', 'Books that involve magical elements')

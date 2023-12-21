@@ -7,20 +7,14 @@ databaseChangeLog:
             tableName: categories
             columns:
               - column:
-                  name: id
-                  value: 1
-              - column:
                   name: name
-                  value: Fiction
+                  value: fiction
               - column:
                   name: description
                   value: Genre encompassing all types of works created based on imagination or invention
         - insert:
             tableName: categories
             columns:
-              - column:
-                  name: id
-                  value: 2
               - column:
                   name: name
                   value: novel
@@ -30,9 +24,6 @@ databaseChangeLog:
         - insert:
             tableName: categories
             columns:
-              - column:
-                  name: id
-                  value: 3
               - column:
                   name: name
                   value: classics

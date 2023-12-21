@@ -1,0 +1,1 @@
+insert into books (id, title, author, description, isbn, price) values (10, 'The Night Circus', 'Erin Morgenstern', 'Breathtaking book', '9780451524990', 30)

@@ -1,0 +1,1 @@
+delete from books where isbn = '9780743273760'

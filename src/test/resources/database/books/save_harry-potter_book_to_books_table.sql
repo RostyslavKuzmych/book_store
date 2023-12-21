@@ -1,0 +1,1 @@
+insert into books (id, title, author, description, isbn, price) values (8, 'Harry Potter and the Sorcerer''s Stone', 'J.K. Rowling', 'Fantastic book', '9789451524990', 25)
