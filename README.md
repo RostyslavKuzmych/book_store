@@ -116,8 +116,8 @@
   </code>
 </pre>
 <p style="margin-top: 0pc;"><code>/api/books  // POST</code></p>
-<p style="margin-top: 0pc;"><code>/api/books  // PUT</code></p>
-<p style="margin-top: 0pc;"><code>/api/books  // DELETE</code></p>
+<p style="margin-top: 0pc;"><code>/api/books/{bookId}  // PUT</code></p>
+<p style="margin-top: 0pc;"><code>/api/books/{bookId}  // DELETE</code></p>
 <p style="font-size: 16px; margin-top: -0.6pc;">These endpoints are intended for administrators to add, update, and delete books from the store.</p>
 <p style="font-size: 20px; margin-top: 0pc;">Category Controller</p>
 <p style="margin-top: 0pc;"><code>/api/categories  // POST</code></p>
@@ -128,7 +128,7 @@
 <p style="font-size: 16px; margin-top: -0.8pc;">This endpoint is intended for users to view a specific category.</p>
 <p style="margin-top: 0pc;"><code>/api/categories/{categoryId}  // PUT</code></p>
 <p style="font-size: 16px; margin-top: -0.8pc;">This endpoint is intended for administrators to update a specific category.</p>
-<p style="margin-top: 0pc;"><code>/api/categories  // DELETE</code></p>
+<p style="margin-top: 0pc;"><code>/api/categories/{categoryId}  // DELETE</code></p>
 <p style="font-size: 16px; margin-top: -0.8pc;">This endpoint is intended for administrators to delete a specific category.</p>
 <p style="margin-top: 0pc;"><code>/api/categories/{categoryId}/books  // GET</code></p>
 <p style="font-size: 16px; margin-top: -0.8pc;">This endpoint is intended for users to view all books by category id.</p>
