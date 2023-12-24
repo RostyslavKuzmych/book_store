@@ -1,4 +1,4 @@
-<img height="200" src="Знімок екрана 2023-12-22 171708.png" width="500" style="display: block; margin: 0 auto; margin-top: 1pc;">
+<img height="200" src="book_store_image.png" width="500" style="display: block; margin: 0 auto; margin-top: 1pc;">
 <h1 style="text-align: center; font-size: 36px; margin-top: -0.5pc;">Book store</h1>
 <h1 style="font-size: 24.5px; margin-top: -2pc; margin-left: 0pc;">Introduction</h1>
 <p style="font-size: 16px; margin-top: -0.8pc;">Book Store is an online platform created for user convenience in searching, browsing, and purchasing books through the Internet. It solves several issues:</p>
