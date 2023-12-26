@@ -10,6 +10,7 @@ databaseChangeLog:
                   name: user_id
                   type: bigint
                   constraints:
+                    primaryKey: true
                     foreignKeyName: fk_users_roles_user_id
                     nullable: false
                     references: users(id)
@@ -17,6 +18,7 @@ databaseChangeLog:
                   name: role_id
                   type: bigint
                   constraints:
+                    primaryKey: true
                     foreignKeyName: fk_users_roles_role_id
                     nullable: false
                     references: roles(id)
