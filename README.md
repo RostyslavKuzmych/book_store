@@ -133,8 +133,8 @@
 <p style="margin-top: 0pc;"><code>/api/books/{bookId}  // PUT</code></p>
 <p style="margin-top: 0pc;"><code>/api/books/{bookId}  // DELETE</code></p>
 <p style="font-size: 16px; margin-top: -0.6pc;">These endpoints are intended for administrators to add, update, and delete books from the store.</p>
-
-<p style="font-size: 20px; margin-top: 0pc;">Category Controller</p>
+<p style="font-size: 15px; margin-top: -1pc;">Now, a brief description of the other controllers: </p>
+<p style="font-size: 20px; margin-top: -1pc;">Category Controller</p>
 <p style="margin-top: 0pc;"><code>/api/categories  // POST</code></p>
 <p style="font-size: 16px; margin-top: -0.8pc;"><a href="">This</a> endpoint is intended for administrators to add a new category.</p>
 <p style="margin-top: 0pc;"><code>/api/categories  // GET</code></p>
@@ -170,6 +170,9 @@
 <p style="margin-top: 0pc;"><code>/api/cart/{cartItemId}  // DELETE</code></p>
 <p style="font-size: 16px; margin-top: -0.8pc;"><a href="https://www.postman.com/lunar-module-cosmologist-43034160/workspace/book-store/request/31108999-859f0364-6b72-4b24-bdd5-64fb20ce7ed1">This</a> endpoint is intended for users to delete a specific cart item from their shopping cart.</p>
 
+<h1 style="font-size: 24.5px; margin-top: -1pc; margin-left: 0pc;">Ability to send requests to the endpoints by Postman</h1>
+<p style="font-size: 16px; margin-top: -0.8pc;">Moreover, you can try sending requests to the endpoints using Postman by clicking <a href="https://www.postman.com/lunar-module-cosmologist-43034160/workspace/book-store/collection/31108999-12fddcfe-0952-4376-8687-98fe077eea02">here</a>. It's a collection of prepared requests where you can test functionality of the controllers. Here are all endpoints, to which users can send requests. Log in and registration endpoints don't need a token, but the others do. Firstly, you need to register if you haven't already. Next, you'll need to log in to obtain a token. After that, you must pass the token in the header authorization in the Bearer Token field. To elaborate on that, I recorded a video where I showed how all endpoints work, including endpoints, which are accessible for administrators. You can watch it by clicking <a href="https://www.loom.com/share/9b0fba93601a4fa3a9c5181a172bc297">here</a> 😊🎥.</p>
+
 <h1 style="font-size: 24.5px; margin-top: -1pc; margin-left: 0pc;">History of creating the project</h1>
 <h1 style="font-size: 16px; margin-top: -1pc; margin-left: 0pc;">Docker and test issues</h1>
 <p style="font-size: 16px; margin-top: -0.8pc;">During the project development, I faced several issues. The first issue was with docker, my configurations weren't correct, so it caused my application to fail to launch. To resolve this, I discovered a sample docker-compose.yml file online and restructured mine accordingly. Additionally, I faced issues with tests. Initially, I had implemented incorrect logic in the JwtAuthenticationFilter. Because of this, my tests didn't pass. However, after understanding the problem, I rewrote the filter, solving the issues 🔧😅.</p>
@@ -177,6 +180,3 @@
 <p style="font-size: 16px; margin-top: -0.8pc;">Also, I faced problems with Liquibase as I was creating tables in the wrong sequence. Consequently, my application failed to start. Upon debugging, I identified the mistake and restructured everything correctly 😅. Moreover, I encountered difficulties with security settings. I couldn't access a public endpoint because I didn't specify in the security configuration which endpoints could be accessed by unregistered users. While searching for a solution online, I found the 'authorizeHttpRequests' method, which resolved my issue 😊🔒.</p>
 <h1 style="font-size: 16px; margin-top: -1pc; margin-left: 0pc;">Possible improvements</h1>
 <p style="font-size: 16px; margin-top: -0.8pc;">Furthermore, to enhance my project, I plan to add a 'Response' controller. This controller will allow users to give feedback and ratings (from 1 to 10) for each book they purchase. This functionality aims to provide users with insights into recommended books based on ratings and reviews 😃📚.</p>
-
-<h1 style="font-size: 24.5px; margin-top: -1pc; margin-left: 0pc;">Ability to send requests to the endpoints by Postman</h1>
-<p style="font-size: 16px; margin-top: -0.8pc;">Moreover, you can try sending requests to the endpoints using Postman by clicking <a href="https://www.postman.com/lunar-module-cosmologist-43034160/workspace/book-store/collection/31108999-12fddcfe-0952-4376-8687-98fe077eea02">here</a>. It's a collection of prepared requests where you can test functionality of the controllers. Here are all endpoints, to which users can send requests. Log in and registration endpoints don't need a token, but the others do. Firstly, you need to register if you haven't already. Next, you'll need to log in to obtain a token. After that, you must pass the token in the header authorization in the Bearer Token field. To elaborate on that, I recorded a video where I showed how all endpoints work, including endpoints, which are accessible for administrators. You can watch it by clicking <a href="https://www.loom.com/share/9b0fba93601a4fa3a9c5181a172bc297">here</a> 😊🎥.</p>
