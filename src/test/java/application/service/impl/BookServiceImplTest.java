@@ -245,8 +245,8 @@ class BookServiceImplTest {
     void getBooksByParams_ValidParams_ReturnOneBook() {
         // given
         BookSearchParametersDto bookSearchParametersDto
-                        = new BookSearchParametersDto(new String[]{"1984"},
-                                new String[]{"George Orwell"});
+                = new BookSearchParametersDto(new String[]{"1984"},
+                        new String[]{"George Orwell"});
 
         // when
         when(specificationBuilder

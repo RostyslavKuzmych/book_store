@@ -73,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(Status.RECEIVED);
         Order savedOrder = orderRepository.save(order);
         savedOrder.setItemSet(populateWithOrderItems(savedOrder, shoppingCart));
-        savedOrder.setTotal(getTotalPrice(order.getItemSet()));
+        savedOrder.setTotal(getTotalPrice(savedOrder.getItemSet()));
         return savedOrder;
     }
 
@@ -102,7 +102,7 @@ public class OrderServiceImpl implements OrderService {
         return items;
     }
 
-    public void deleteAllCartItems(Set<CartItem> cartItemSet) {
+    private void deleteAllCartItems(Set<CartItem> cartItemSet) {
         cartItemSet.stream().forEach(cartItemService::deleteCartItem);
     }
 }
