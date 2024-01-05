@@ -53,8 +53,6 @@ class AuthenticationControllerTest {
     @Test
     @Sql(value = PATH_SHOPPING_CARTS + "remove_clark_shoppingCart_from_shopping_carts_table.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @Sql(value = PATH_USERS + "remove_clark_user_from_users_table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("""
             Verify register() method with correct userRequest
             """)
@@ -86,6 +84,7 @@ class AuthenticationControllerTest {
         // then
         UserResponseDto actual = objectMapper
                 .readValue(mvcResult.getResponse().getContentAsString(), UserResponseDto.class);
+        System.out.println(actual);
         assertNotNull(actual.getId());
         assertEquals(clarkResponseDto, actual);
     }
